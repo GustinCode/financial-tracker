@@ -1,0 +1,39 @@
+name: financial_tracker
+description: Aplicativo mobile de gerenciamento financeiro pessoal
+publish_to: 'none'
+version: 0.0.1+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Gerenciamento de estado
+  provider: ^6.1.1
+  
+  # Banco de dados local
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  # Utilitários
+  intl: ^0.19.0
+  uuid: ^4.2.1
+  
+  # Ícones
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.7
+
+flutter:
+  uses-material-design: true
+
+
+
+

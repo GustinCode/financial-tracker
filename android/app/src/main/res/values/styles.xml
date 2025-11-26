@@ -1,0 +1,13 @@
+<resources>
+    <!-- Theme used while the Flutter engine is initializing -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <!-- Theme used after the Flutter app has drawn its first frame -->
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>
+
+
