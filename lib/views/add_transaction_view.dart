@@ -46,9 +46,11 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   void _loadCategories() {
     final categoryProvider = context.read<CategoryProvider>();
     setState(() {
-      _availableCategories = categoryProvider.getCategoriesByType(_selectedType);
+      _availableCategories =
+          categoryProvider.getCategoriesByType(_selectedType);
       if (isEditing && widget.transaction != null) {
-        _selectedCategory = categoryProvider.getCategoryById(widget.transaction!.categoryId);
+        _selectedCategory =
+            categoryProvider.getCategoryById(widget.transaction!.categoryId);
       } else if (_availableCategories.isNotEmpty) {
         _selectedCategory = _availableCategories.first;
       }
@@ -99,7 +101,8 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       return;
     }
 
-    final amount = double.tryParse(_amountController.text.replaceAll(',', '.')) ?? 0.0;
+    final amount =
+        double.tryParse(_amountController.text.replaceAll(',', '.')) ?? 0.0;
 
     final transaction = Transaction(
       id: widget.transaction?.id ?? const Uuid().v4(),
@@ -143,189 +146,203 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       appBar: AppBar(
         title: Text(isEditing ? 'Editar Transação' : 'Nova Transação'),
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            // Tipo de Transação
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Tipo',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SegmentedButton<TransactionType>(
-                      segments: const [
-                        ButtonSegment<TransactionType>(
-                          value: TransactionType.income,
-                          label: Text('Receita'),
-                          icon: Icon(Icons.trending_up),
-                        ),
-                        ButtonSegment<TransactionType>(
-                          value: TransactionType.expense,
-                          label: Text('Despesa'),
-                          icon: Icon(Icons.trending_down),
-                        ),
-                      ],
-                      selected: {_selectedType},
-                      onSelectionChanged: (Set<TransactionType> newSelection) {
-                        _onTypeChanged(newSelection.first);
-                      },
-                    ),
-                  ],
-                ),
-              ),
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              16 + MediaQuery.of(context).padding.bottom,
             ),
-            const SizedBox(height: 16),
-
-            // Título
-            TextFormField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Título *',
-                hintText: 'Ex: Salário, Almoço, etc.',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.title),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Por favor, insira um título';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Valor
-            TextFormField(
-              controller: _amountController,
-              decoration: const InputDecoration(
-                labelText: 'Valor *',
-                hintText: '0.00',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.attach_money),
-              ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Por favor, insira um valor';
-                }
-                final amount = double.tryParse(value.replaceAll(',', '.'));
-                if (amount == null || amount <= 0) {
-                  return 'Por favor, insira um valor válido';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Categoria
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Categoria *',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (_availableCategories.isEmpty)
+            children: [
+              // Tipo de Transação
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       const Text(
-                        'Nenhuma categoria disponível',
-                        style: TextStyle(color: Colors.grey),
-                      )
-                    else
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _availableCategories.map((category) {
-                          final isSelected = _selectedCategory?.id == category.id;
-                          return FilterChip(
-                            selected: isSelected,
-                            label: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(category.icon),
-                                const SizedBox(width: 4),
-                                Text(category.name),
-                              ],
-                            ),
-                            onSelected: (selected) {
-                              setState(() {
-                                _selectedCategory = category;
-                              });
-                            },
-                            selectedColor: Color(category.colorValue).withOpacity(0.3),
-                            checkmarkColor: Color(category.colorValue),
-                          );
-                        }).toList(),
+                        'Tipo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                  ],
+                      const SizedBox(height: 8),
+                      SegmentedButton<TransactionType>(
+                        segments: const [
+                          ButtonSegment<TransactionType>(
+                            value: TransactionType.income,
+                            label: Text('Receita'),
+                            icon: Icon(Icons.trending_up),
+                          ),
+                          ButtonSegment<TransactionType>(
+                            value: TransactionType.expense,
+                            label: Text('Despesa'),
+                            icon: Icon(Icons.trending_down),
+                          ),
+                        ],
+                        selected: {_selectedType},
+                        onSelectionChanged:
+                            (Set<TransactionType> newSelection) {
+                          _onTypeChanged(newSelection.first);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Data
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.calendar_today),
-                title: const Text('Data'),
-                subtitle: Text(Formatters.formatDate(_selectedDate)),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: _selectDate,
+              // Título
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Título *',
+                  hintText: 'Ex: Salário, Almoço, etc.',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.title),
+                ),
+                textInputAction: TextInputAction.next,
+                scrollPadding: const EdgeInsets.only(bottom: 80),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Por favor, insira um título';
+                  }
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Descrição
-            TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Descrição (opcional)',
-                hintText: 'Observações adicionais...',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.description),
+              // Valor
+              TextFormField(
+                controller: _amountController,
+                decoration: const InputDecoration(
+                  labelText: 'Valor *',
+                  hintText: '0.00',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                textInputAction: TextInputAction.next,
+                scrollPadding: const EdgeInsets.only(bottom: 80),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Por favor, insira um valor';
+                  }
+                  final amount = double.tryParse(value.replaceAll(',', '.'));
+                  if (amount == null || amount <= 0) {
+                    return 'Por favor, insira um valor válido';
+                  }
+                  return null;
+                },
               ),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-            // Botão Salvar
-            ElevatedButton(
-              onPressed: _saveTransaction,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+              // Categoria
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Categoria *',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (_availableCategories.isEmpty)
+                        const Text(
+                          'Nenhuma categoria disponível',
+                          style: TextStyle(color: Colors.grey),
+                        )
+                      else
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _availableCategories.map((category) {
+                            final isSelected =
+                                _selectedCategory?.id == category.id;
+                            return FilterChip(
+                              selected: isSelected,
+                              label: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(category.icon),
+                                  const SizedBox(width: 4),
+                                  Text(category.name),
+                                ],
+                              ),
+                              onSelected: (selected) {
+                                setState(() {
+                                  _selectedCategory = category;
+                                });
+                              },
+                              selectedColor: Color(category.colorValue)
+                                  .withValues(alpha: 0.3),
+                              checkmarkColor: Color(category.colorValue),
+                            );
+                          }).toList(),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-              child: Text(
-                isEditing ? 'Atualizar Transação' : 'Salvar Transação',
-                style: const TextStyle(fontSize: 16),
+              const SizedBox(height: 16),
+
+              // Data
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.calendar_today),
+                  title: const Text('Data'),
+                  subtitle: Text(Formatters.formatDate(_selectedDate)),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: _selectDate,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+
+              // Descrição
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Descrição (opcional)',
+                  hintText: 'Observações adicionais...',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.description),
+                ),
+                maxLines: 3,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                scrollPadding: const EdgeInsets.only(bottom: 80),
+              ),
+              const SizedBox(height: 24),
+
+              // Botão Salvar
+              ElevatedButton(
+                onPressed: _saveTransaction,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  isEditing ? 'Atualizar Transação' : 'Salvar Transação',
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
-
-
-

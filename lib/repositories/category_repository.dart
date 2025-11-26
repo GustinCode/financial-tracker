@@ -4,7 +4,8 @@ import '../models/transaction_model.dart';
 import '../services/database_service.dart';
 
 class CategoryRepository {
-  Box<Category> get _box => Hive.box<Category>(DatabaseService.categoriesBoxName);
+  Box<Category> get _box =>
+      Hive.box<Category>(DatabaseService.categoriesBoxName);
 
   Future<List<Category>> getAllCategories() async {
     return _box.values.toList();
@@ -31,7 +32,3 @@ class CategoryRepository {
     await _box.delete(id);
   }
 }
-
-
-
-

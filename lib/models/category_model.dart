@@ -75,4 +75,3 @@ class Category extends HiveObject {
     );
   }
 }
-

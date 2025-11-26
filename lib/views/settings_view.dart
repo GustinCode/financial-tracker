@@ -25,10 +25,10 @@ class SettingsView extends StatelessWidget {
               ),
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('Versão'),
-            subtitle: const Text('1.0.0'),
+          const ListTile(
+            leading: Icon(Icons.info_outline),
+            title: Text('Versão'),
+            subtitle: Text('0.0.3'),
           ),
           const Divider(),
           const Padding(
@@ -62,7 +62,8 @@ class SettingsView extends StatelessWidget {
                       onPressed: () async {
                         final transactions = transactionProvider.transactions;
                         for (var transaction in transactions) {
-                          await transactionProvider.deleteTransaction(transaction.id);
+                          await transactionProvider
+                              .deleteTransaction(transaction.id);
                         }
                         if (context.mounted) {
                           Navigator.pop(context);
@@ -139,7 +140,3 @@ class SettingsView extends StatelessWidget {
     );
   }
 }
-
-
-
-

@@ -129,4 +129,3 @@ class Transaction extends HiveObject {
     );
   }
 }
-

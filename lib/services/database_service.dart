@@ -22,14 +22,14 @@ class DatabaseService {
 
   static Future<void> _initializeDefaultCategories() async {
     final categoryRepository = CategoryRepository();
-    
+
     // Categorias de Receita
     final incomeCategories = [
       Category(
         id: 'income_salary',
         name: 'Salário',
         type: TransactionType.income,
-        colorValue: Colors.green.value,
+        colorValue: Colors.green.toARGB32(),
         icon: '💰',
         isDefault: true,
       ),
@@ -37,7 +37,7 @@ class DatabaseService {
         id: 'income_sales',
         name: 'Vendas',
         type: TransactionType.income,
-        colorValue: Colors.lightGreen.value,
+        colorValue: Colors.lightGreen.toARGB32(),
         icon: '💵',
         isDefault: true,
       ),
@@ -45,7 +45,7 @@ class DatabaseService {
         id: 'income_investments',
         name: 'Investimentos',
         type: TransactionType.income,
-        colorValue: Colors.teal.value,
+        colorValue: Colors.teal.toARGB32(),
         icon: '📈',
         isDefault: true,
       ),
@@ -53,7 +53,7 @@ class DatabaseService {
         id: 'income_gifts',
         name: 'Presentes',
         type: TransactionType.income,
-        colorValue: Colors.purple.value,
+        colorValue: Colors.purple.toARGB32(),
         icon: '🎁',
         isDefault: true,
       ),
@@ -61,7 +61,7 @@ class DatabaseService {
         id: 'income_other',
         name: 'Outras Receitas',
         type: TransactionType.income,
-        colorValue: Colors.blueGrey.value,
+        colorValue: Colors.blueGrey.toARGB32(),
         icon: '💳',
         isDefault: true,
       ),
@@ -73,7 +73,7 @@ class DatabaseService {
         id: 'expense_food',
         name: 'Alimentação',
         type: TransactionType.expense,
-        colorValue: Colors.orange.value,
+        colorValue: Colors.orange.toARGB32(),
         icon: '🍔',
         isDefault: true,
       ),
@@ -81,7 +81,7 @@ class DatabaseService {
         id: 'expense_transport',
         name: 'Transporte',
         type: TransactionType.expense,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
         icon: '🚗',
         isDefault: true,
       ),
@@ -89,7 +89,7 @@ class DatabaseService {
         id: 'expense_housing',
         name: 'Moradia',
         type: TransactionType.expense,
-        colorValue: Colors.brown.value,
+        colorValue: Colors.brown.toARGB32(),
         icon: '🏠',
         isDefault: true,
       ),
@@ -97,7 +97,7 @@ class DatabaseService {
         id: 'expense_health',
         name: 'Saúde',
         type: TransactionType.expense,
-        colorValue: Colors.red.value,
+        colorValue: Colors.red.toARGB32(),
         icon: '🏥',
         isDefault: true,
       ),
@@ -105,7 +105,7 @@ class DatabaseService {
         id: 'expense_education',
         name: 'Educação',
         type: TransactionType.expense,
-        colorValue: Colors.indigo.value,
+        colorValue: Colors.indigo.toARGB32(),
         icon: '📚',
         isDefault: true,
       ),
@@ -113,7 +113,7 @@ class DatabaseService {
         id: 'expense_leisure',
         name: 'Lazer',
         type: TransactionType.expense,
-        colorValue: Colors.pink.value,
+        colorValue: Colors.pink.toARGB32(),
         icon: '🎮',
         isDefault: true,
       ),
@@ -121,7 +121,7 @@ class DatabaseService {
         id: 'expense_shopping',
         name: 'Compras',
         type: TransactionType.expense,
-        colorValue: Colors.purple.value,
+        colorValue: Colors.purple.toARGB32(),
         icon: '🛍️',
         isDefault: true,
       ),
@@ -129,7 +129,7 @@ class DatabaseService {
         id: 'expense_bills',
         name: 'Contas e Serviços',
         type: TransactionType.expense,
-        colorValue: Colors.amber.value,
+        colorValue: Colors.amber.toARGB32(),
         icon: '💡',
         isDefault: true,
       ),
@@ -137,7 +137,7 @@ class DatabaseService {
         id: 'expense_other',
         name: 'Outras Despesas',
         type: TransactionType.expense,
-        colorValue: Colors.grey.value,
+        colorValue: Colors.grey.toARGB32(),
         icon: '📦',
         isDefault: true,
       ),
@@ -149,4 +149,3 @@ class DatabaseService {
     }
   }
 }
-

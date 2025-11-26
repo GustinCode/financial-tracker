@@ -110,10 +110,10 @@ class _HomeTab extends StatelessWidget {
               ),
             ),
           ),
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: const Text(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
                 'Transações Recentes',
                 style: TextStyle(
                   fontSize: 18,
@@ -158,7 +158,8 @@ class _HomeTab extends StatelessWidget {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final transaction = transactionProvider.transactions[index];
-                  final category = categoryProvider.getCategoryById(transaction.categoryId);
+                  final category =
+                      categoryProvider.getCategoryById(transaction.categoryId);
                   return TransactionCard(
                     transaction: transaction,
                     category: category,
@@ -190,7 +191,3 @@ class _HomeTab extends StatelessWidget {
     );
   }
 }
-
-
-
-

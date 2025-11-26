@@ -29,7 +29,7 @@ class TransactionCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: categoryColor.withOpacity(0.2),
+          backgroundColor: categoryColor.withValues(alpha: 0.2),
           child: Text(
             category?.icon ?? (isIncome ? '💰' : '💸'),
             style: const TextStyle(fontSize: 20),
@@ -72,7 +72,9 @@ class TransactionCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: isIncome ? AppConstants.incomeColor : AppConstants.expenseColor,
+                color: isIncome
+                    ? AppConstants.incomeColor
+                    : AppConstants.expenseColor,
               ),
             ),
           ],
@@ -84,7 +86,8 @@ class TransactionCard extends StatelessWidget {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('Excluir Transação'),
-                    content: const Text('Tem certeza que deseja excluir esta transação?'),
+                    content: const Text(
+                        'Tem certeza que deseja excluir esta transação?'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
@@ -109,7 +112,3 @@ class TransactionCard extends StatelessWidget {
     );
   }
 }
-
-
-
-
