@@ -7,6 +7,7 @@ import '../widgets/transaction_card.dart';
 import 'add_transaction_view.dart';
 import 'history_view.dart';
 import 'settings_view.dart';
+import 'input_data_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -43,6 +44,7 @@ class _HomeViewState extends State<HomeView> {
         index: _selectedIndex,
         children: const [
           _HomeTab(),
+          InputDataView(),
           HistoryView(),
           SettingsView(),
         ],
@@ -54,6 +56,10 @@ class _HomeViewState extends State<HomeView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Início',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.playlist_add),
+            label: 'Lançar',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
