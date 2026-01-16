@@ -1,0 +1,334 @@
+{
+  "@@locale": "pt",
+  "appTitle": "Financial Tracker",
+  "@appTitle": {
+    "description": "Título do aplicativo"
+  },
+  "home": "Início",
+  "@home": {
+    "description": "Aba inicial"
+  },
+  "history": "Histórico",
+  "@history": {
+    "description": "Aba de histórico"
+  },
+  "settings": "Configurações",
+  "@settings": {
+    "description": "Aba de configurações"
+  },
+  "newTransaction": "Nova Transação",
+  "@newTransaction": {
+    "description": "Botão para nova transação"
+  },
+  "recentTransactions": "Transações Recentes",
+  "@recentTransactions": {
+    "description": "Título da seção de transações recentes"
+  },
+  "noTransactionsRegistered": "Nenhuma transação registrada",
+  "@noTransactionsRegistered": {
+    "description": "Mensagem quando não há transações"
+  },
+  "tapToAdd": "Toque no botão + para adicionar",
+  "@tapToAdd": {
+    "description": "Instrução para adicionar transação"
+  },
+  "editTransaction": "Editar Transação",
+  "@editTransaction": {
+    "description": "Título ao editar transação"
+  },
+  "type": "Tipo",
+  "@type": {
+    "description": "Label do tipo de transação"
+  },
+  "income": "Receita",
+  "@income": {
+    "description": "Tipo de transação: receita"
+  },
+  "expense": "Despesa",
+  "@expense": {
+    "description": "Tipo de transação: despesa"
+  },
+  "title": "Título",
+  "@title": {
+    "description": "Label do título"
+  },
+  "titleRequired": "Título *",
+  "@titleRequired": {
+    "description": "Label do título obrigatório"
+  },
+  "titleHint": "Ex: Salário, Almoço, etc.",
+  "@titleHint": {
+    "description": "Hint do campo título"
+  },
+  "pleaseEnterTitle": "Por favor, insira um título",
+  "@pleaseEnterTitle": {
+    "description": "Validação do título"
+  },
+  "amount": "Valor",
+  "@amount": {
+    "description": "Label do valor"
+  },
+  "amountRequired": "Valor *",
+  "@amountRequired": {
+    "description": "Label do valor obrigatório"
+  },
+  "pleaseEnterAmount": "Por favor, insira um valor",
+  "@pleaseEnterAmount": {
+    "description": "Validação do valor"
+  },
+  "pleaseEnterValidAmount": "Por favor, insira um valor válido",
+  "@pleaseEnterValidAmount": {
+    "description": "Validação de valor inválido"
+  },
+  "category": "Categoria",
+  "@category": {
+    "description": "Label da categoria"
+  },
+  "categoryRequired": "Categoria *",
+  "@categoryRequired": {
+    "description": "Label da categoria obrigatória"
+  },
+  "noCategoryAvailable": "Nenhuma categoria disponível",
+  "@noCategoryAvailable": {
+    "description": "Mensagem quando não há categorias"
+  },
+  "pleaseSelectCategory": "Por favor, selecione uma categoria",
+  "@pleaseSelectCategory": {
+    "description": "Validação da categoria"
+  },
+  "date": "Data",
+  "@date": {
+    "description": "Label da data"
+  },
+  "description": "Descrição",
+  "@description": {
+    "description": "Label da descrição"
+  },
+  "descriptionOptional": "Descrição (opcional)",
+  "@descriptionOptional": {
+    "description": "Label da descrição opcional"
+  },
+  "descriptionHint": "Observações adicionais...",
+  "@descriptionHint": {
+    "description": "Hint da descrição"
+  },
+  "saveTransaction": "Salvar Transação",
+  "@saveTransaction": {
+    "description": "Botão salvar transação"
+  },
+  "updateTransaction": "Atualizar Transação",
+  "@updateTransaction": {
+    "description": "Botão atualizar transação"
+  },
+  "addToList": "Adicionar à Lista",
+  "@addToList": {
+    "description": "Botão adicionar à lista"
+  },
+  "transactionUpdated": "Transação atualizada com sucesso!",
+  "@transactionUpdated": {
+    "description": "Mensagem de sucesso ao atualizar"
+  },
+  "transactionAdded": "Transação adicionada com sucesso!",
+  "@transactionAdded": {
+    "description": "Mensagem de sucesso ao adicionar"
+  },
+  "all": "Todas",
+  "@all": {
+    "description": "Filtro: todas as transações"
+  },
+  "incomes": "Receitas",
+  "@incomes": {
+    "description": "Filtro: receitas"
+  },
+  "expenses": "Despesas",
+  "@expenses": {
+    "description": "Filtro: despesas"
+  },
+  "noIncomeRegistered": "Nenhuma receita registrada",
+  "@noIncomeRegistered": {
+    "description": "Mensagem quando não há receitas"
+  },
+  "noExpenseRegistered": "Nenhuma despesa registrada",
+  "@noExpenseRegistered": {
+    "description": "Mensagem quando não há despesas"
+  },
+  "today": "Hoje",
+  "@today": {
+    "description": "Label para hoje"
+  },
+  "yesterday": "Ontem",
+  "@yesterday": {
+    "description": "Label para ontem"
+  },
+  "currentBalance": "Saldo Atual",
+  "@currentBalance": {
+    "description": "Label do saldo atual"
+  },
+  "incomesLabel": "Receitas",
+  "@incomesLabel": {
+    "description": "Label de receitas no display"
+  },
+  "expensesLabel": "Despesas",
+  "@expensesLabel": {
+    "description": "Label de despesas no display"
+  },
+  "deleteTransaction": "Excluir Transação",
+  "@deleteTransaction": {
+    "description": "Título do diálogo de exclusão"
+  },
+  "confirmDeleteTransaction": "Tem certeza que deseja excluir esta transação?",
+  "@confirmDeleteTransaction": {
+    "description": "Confirmação de exclusão"
+  },
+  "cancel": "Cancelar",
+  "@cancel": {
+    "description": "Botão cancelar"
+  },
+  "delete": "Excluir",
+  "@delete": {
+    "description": "Botão excluir"
+  },
+  "aboutApp": "Sobre o App",
+  "@aboutApp": {
+    "description": "Título da seção sobre o app"
+  },
+  "version": "Versão",
+  "@version": {
+    "description": "Label da versão"
+  },
+  "data": "Dados",
+  "@data": {
+    "description": "Título da seção de dados"
+  },
+  "clearAllData": "Limpar Todos os Dados",
+  "@clearAllData": {
+    "description": "Opção para limpar dados"
+  },
+  "clearAllDataDescription": "Excluir todas as transações",
+  "@clearAllDataDescription": {
+    "description": "Descrição da opção limpar dados"
+  },
+  "confirmClearData": "Tem certeza que deseja excluir todas as transações? Esta ação não pode ser desfeita.",
+  "@confirmClearData": {
+    "description": "Confirmação para limpar dados"
+  },
+  "deleteAll": "Excluir Tudo",
+  "@deleteAll": {
+    "description": "Botão excluir tudo"
+  },
+  "allDataDeleted": "Todos os dados foram excluídos",
+  "@allDataDeleted": {
+    "description": "Mensagem após excluir tudo"
+  },
+  "information": "Informações",
+  "@information": {
+    "description": "Título da seção de informações"
+  },
+  "privacyPolicy": "Política de Privacidade",
+  "@privacyPolicy": {
+    "description": "Opção de política de privacidade"
+  },
+  "privacyPolicyDescription": "Como protegemos seus dados",
+  "@privacyPolicyDescription": {
+    "description": "Descrição da política de privacidade"
+  },
+  "privacyPolicyContent": "Todos os seus dados são armazenados localmente no seu dispositivo. Nenhuma informação é enviada para servidores externos. Você tem controle total sobre seus dados financeiros.",
+  "@privacyPolicyContent": {
+    "description": "Conteúdo da política de privacidade"
+  },
+  "help": "Ajuda",
+  "@help": {
+    "description": "Opção de ajuda"
+  },
+  "helpDescription": "Como usar o aplicativo",
+  "@helpDescription": {
+    "description": "Descrição da ajuda"
+  },
+  "helpContent": "• Toque no botão \"+\" para adicionar uma nova transação\n\n• Na tela inicial, você vê seu saldo e transações recentes\n\n• No histórico, você pode ver todas as transações organizadas por data\n\n• Toque em uma transação para editá-la\n\n• Mantenha pressionado uma transação para excluí-la",
+  "@helpContent": {
+    "description": "Conteúdo da ajuda"
+  },
+  "entries": "Lançamentos",
+  "@entries": {
+    "description": "Título da tela de lançamentos"
+  },
+  "noEntriesYet": "Nenhum lançamento ainda.\nUse o botão abaixo para adicionar.",
+  "@noEntriesYet": {
+    "description": "Mensagem quando não há lançamentos"
+  },
+  "totalIncome": "Total Receitas:",
+  "@totalIncome": {
+    "description": "Label do total de receitas"
+  },
+  "totalExpenses": "Total Despesas:",
+  "@totalExpenses": {
+    "description": "Label do total de despesas"
+  },
+  "balance": "Saldo:",
+  "@balance": {
+    "description": "Label do saldo"
+  },
+  "addIncomeExpense": "Adicionar Receita/Despesa",
+  "@addIncomeExpense": {
+    "description": "Botão adicionar receita/despesa"
+  },
+  "confirm": "Confirmar",
+  "@confirm": {
+    "description": "Botão confirmar"
+  },
+  "noTransactionsToConfirm": "Nenhuma transação para confirmar",
+  "@noTransactionsToConfirm": {
+    "description": "Mensagem quando não há transações para confirmar"
+  },
+  "transactionsConfirmed": "{count} transação(ões) confirmada(s) com sucesso!",
+  "@transactionsConfirmed": {
+    "description": "Mensagem de confirmação",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "language": "Idioma",
+  "@language": {
+    "description": "Label do idioma"
+  },
+  "selectLanguage": "Selecionar Idioma",
+  "@selectLanguage": {
+    "description": "Título do seletor de idioma"
+  },
+  "portuguese": "Português (Brasil)",
+  "@portuguese": {
+    "description": "Nome do idioma português"
+  },
+  "spanishSpain": "Español (España)",
+  "@spanishSpain": {
+    "description": "Nome do idioma espanhol da Espanha"
+  },
+  "spanishMexico": "Español (México)",
+  "@spanishMexico": {
+    "description": "Nome do idioma espanhol do México"
+  },
+  "englishUS": "English (United States)",
+  "@englishUS": {
+    "description": "Nome do idioma inglês dos EUA"
+  },
+  "englishUK": "English (United Kingdom)",
+  "@englishUK": {
+    "description": "Nome do idioma inglês do Reino Unido"
+  },
+  "categorySalary": "Salário",
+  "categorySales": "Vendas",
+  "categoryInvestments": "Investimentos",
+  "categoryGifts": "Presentes",
+  "categoryOtherIncome": "Outras Receitas",
+  "categoryFood": "Alimentação",
+  "categoryTransport": "Transporte",
+  "categoryHousing": "Moradia",
+  "categoryHealth": "Saúde",
+  "categoryEducation": "Educação",
+  "categoryLeisure": "Lazer",
+  "categoryShopping": "Compras",
+  "categoryBills": "Contas e Serviços",
+  "categoryOtherExpense": "Outras Despesas"
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
 import '../models/transaction_model.dart';
@@ -44,6 +45,7 @@ class _HistoryViewState extends State<HistoryView> {
   Widget build(BuildContext context) {
     final transactionProvider = context.watch<TransactionProvider>();
     final categoryProvider = context.watch<CategoryProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     final filteredTransactions = _getFilteredTransactions(transactionProvider.transactions);
     final groupedTransactions = _groupTransactionsByDate(filteredTransactions);
@@ -52,7 +54,7 @@ class _HistoryViewState extends State<HistoryView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Histórico'),
+        title: Text(l10n.history),
         actions: [
           PopupMenuButton<TransactionType?>(
             icon: const Icon(Icons.filter_list),
@@ -62,27 +64,27 @@ class _HistoryViewState extends State<HistoryView> {
               });
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: null,
-                child: Text('Todas'),
+                child: Text(l10n.all),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: TransactionType.income,
                 child: Row(
                   children: [
-                    Icon(Icons.trending_up, color: Colors.green),
-                    SizedBox(width: 8),
-                    Text('Receitas'),
+                    const Icon(Icons.trending_up, color: Colors.green),
+                    const SizedBox(width: 8),
+                    Text(l10n.incomes),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: TransactionType.expense,
                 child: Row(
                   children: [
-                    Icon(Icons.trending_down, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Despesas'),
+                    const Icon(Icons.trending_down, color: Colors.red),
+                    const SizedBox(width: 8),
+                    Text(l10n.expenses),
                   ],
                 ),
               ),
@@ -103,10 +105,10 @@ class _HistoryViewState extends State<HistoryView> {
                   const SizedBox(height: 16),
                   Text(
                     _filterType == null
-                        ? 'Nenhuma transação registrada'
+                        ? l10n.noTransactionsRegistered
                         : _filterType == TransactionType.income
-                            ? 'Nenhuma receita registrada'
-                            : 'Nenhuma despesa registrada',
+                            ? l10n.noIncomeRegistered
+                            : l10n.noExpenseRegistered,
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
@@ -133,11 +135,11 @@ class _HistoryViewState extends State<HistoryView> {
 
                   String dateLabel;
                   if (isToday) {
-                    dateLabel = 'Hoje';
+                    dateLabel = l10n.today;
                   } else if (isYesterday) {
-                    dateLabel = 'Ontem';
+                    dateLabel = l10n.yesterday;
                   } else {
-                    dateLabel = Formatters.formatDate(date);
+                    dateLabel = Formatters.formatDate(date, Formatters.getLocaleFromContext(context));
                   }
 
                   return Column(

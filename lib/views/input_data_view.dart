@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 
 import '../models/transaction_model.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
 import '../utils/formatters.dart';
+import '../services/category_translation_service.dart';
 import 'add_transaction_view.dart';
 
 class InputDataView extends StatefulWidget {
@@ -42,10 +44,11 @@ class _InputDataViewState extends State<InputDataView> {
   }
 
   Future<void> _confirmTransactions() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_pendingTransactions.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Nenhuma transação para confirmar'),
+        SnackBar(
+          content: Text(l10n.noTransactionsToConfirm),
         ),
       );
       return;
@@ -66,7 +69,7 @@ class _InputDataViewState extends State<InputDataView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '$count transação(ões) confirmada(s) com sucesso!',
+            l10n.transactionsConfirmed(count),
           ),
           backgroundColor: Colors.green,
         ),
@@ -77,10 +80,11 @@ class _InputDataViewState extends State<InputDataView> {
   @override
   Widget build(BuildContext context) {
     final categoryProvider = context.watch<CategoryProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lançamentos'),
+        title: Text(l10n.entries),
       ),
       body: Column(
         children: [
@@ -97,7 +101,7 @@ class _InputDataViewState extends State<InputDataView> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Nenhum lançamento ainda.\nUse o botão abaixo para adicionar.',
+                          l10n.noEntriesYet,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -122,8 +126,8 @@ class _InputDataViewState extends State<InputDataView> {
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: isIncome
-                                ? Colors.green.withOpacity(0.1)
-                                : Colors.red.withOpacity(0.1),
+                                ? Colors.green.withValues(alpha: 0.1)
+                                : Colors.red.withValues(alpha: 0.1),
                             child: Text(
                               category?.icon ?? (isIncome ? '⬆️' : '⬇️'),
                               style: const TextStyle(fontSize: 18),
@@ -131,7 +135,7 @@ class _InputDataViewState extends State<InputDataView> {
                           ),
                           title: Text(transaction.title),
                           subtitle: Text(
-                            '${category?.name ?? ''} • ${Formatters.formatDate(transaction.date)}',
+                            '${category != null ? CategoryTranslationService.translateCategoryName(category, context) : ''} • ${Formatters.formatDate(transaction.date, Formatters.getLocaleFromContext(context))}',
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -170,7 +174,7 @@ class _InputDataViewState extends State<InputDataView> {
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: const Offset(0, -2),
                 ),
@@ -186,7 +190,10 @@ class _InputDataViewState extends State<InputDataView> {
                     color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: 0.2),
                     ),
                   ),
                   child: Column(
@@ -202,9 +209,9 @@ class _InputDataViewState extends State<InputDataView> {
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              const Text(
-                                'Total Receitas:',
-                                style: TextStyle(
+                              Text(
+                                l10n.totalIncome,
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
                                 ),
@@ -224,7 +231,10 @@ class _InputDataViewState extends State<InputDataView> {
                       const SizedBox(height: 8),
                       Divider(
                         height: 1,
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline
+                            .withValues(alpha: 0.2),
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -238,9 +248,9 @@ class _InputDataViewState extends State<InputDataView> {
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              const Text(
-                                'Total Despesas:',
-                                style: TextStyle(
+                              Text(
+                                l10n.totalExpenses,
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
                                 ),
@@ -260,15 +270,18 @@ class _InputDataViewState extends State<InputDataView> {
                       const SizedBox(height: 8),
                       Divider(
                         height: 1,
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline
+                            .withValues(alpha: 0.2),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Saldo:',
-                            style: TextStyle(
+                          Text(
+                            l10n.balance,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -279,7 +292,9 @@ class _InputDataViewState extends State<InputDataView> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: (_pendingTotalIncome - _pendingTotalExpenses) >= 0
+                              color: (_pendingTotalIncome -
+                                          _pendingTotalExpenses) >=
+                                      0
                                   ? Colors.green[700]
                                   : Colors.red[700],
                             ),
@@ -308,7 +323,7 @@ class _InputDataViewState extends State<InputDataView> {
                           }
                         },
                         icon: const Icon(Icons.add),
-                        label: const Text('Adicionar Receita/Despesa'),
+                        label: Text(l10n.addIncomeExpense),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
@@ -324,7 +339,7 @@ class _InputDataViewState extends State<InputDataView> {
                           : _confirmTransactions,
                       icon: const Icon(Icons.check),
                       label: Text(
-                        'Confirmar (${_pendingTransactions.length})',
+                        '${l10n.confirm} (${_pendingTransactions.length})',
                       ),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(

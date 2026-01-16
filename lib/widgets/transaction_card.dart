@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/transaction_model.dart';
 import '../models/category_model.dart';
 import '../utils/formatters.dart';
 import '../utils/constants.dart';
+import '../services/category_translation_service.dart';
 
 class TransactionCard extends StatelessWidget {
   final Transaction transaction;
@@ -48,14 +50,14 @@ class TransactionCard extends StatelessWidget {
             const SizedBox(height: 4),
             if (category != null)
               Text(
-                category!.name,
+                CategoryTranslationService.translateCategoryName(category!, context),
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 12,
                 ),
               ),
             Text(
-              Formatters.formatDate(transaction.date),
+              Formatters.formatDate(transaction.date, Formatters.getLocaleFromContext(context)),
               style: TextStyle(
                 color: Colors.grey[500],
                 fontSize: 12,
@@ -68,7 +70,7 @@ class TransactionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              '${isIncome ? '+' : '-'}${Formatters.formatCurrency(transaction.amount)}',
+              '${isIncome ? '+' : '-'}${Formatters.formatCurrency(transaction.amount, Formatters.getLocaleFromContext(context))}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -82,16 +84,16 @@ class TransactionCard extends StatelessWidget {
         onTap: onTap,
         onLongPress: onDelete != null
             ? () {
+                final l10n = AppLocalizations.of(context)!;
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Excluir Transação'),
-                    content: const Text(
-                        'Tem certeza que deseja excluir esta transação?'),
+                    title: Text(l10n.deleteTransaction),
+                    content: Text(l10n.confirmDeleteTransaction),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancelar'),
+                        child: Text(l10n.cancel),
                       ),
                       TextButton(
                         onPressed: () {
@@ -101,7 +103,7 @@ class TransactionCard extends StatelessWidget {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.red,
                         ),
-                        child: const Text('Excluir'),
+                        child: Text(l10n.delete),
                       ),
                     ],
                   ),

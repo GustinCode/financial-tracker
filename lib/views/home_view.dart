@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
 import '../widgets/balance_display.dart';
@@ -10,7 +11,9 @@ import 'settings_view.dart';
 import 'input_data_view.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  final VoidCallback? onLocaleChanged;
+
+  const HomeView({super.key, this.onLocaleChanged});
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -35,34 +38,35 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Financial Tracker'),
+        title: Text(l10n.appTitle),
         elevation: 0,
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: const [
-          _HomeTab(),
-          HistoryView(),
-          SettingsView(),
+        children: [
+          const _HomeTab(),
+          const HistoryView(),
+          SettingsView(onLocaleChanged: widget.onLocaleChanged),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Início',
+            icon: const Icon(Icons.home),
+            label: l10n.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Histórico',
+            icon: const Icon(Icons.history),
+            label: l10n.history,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Configurações',
+            icon: const Icon(Icons.settings),
+            label: l10n.settings,
           ),
         ],
       ),
@@ -80,7 +84,7 @@ class _HomeViewState extends State<HomeView> {
                 }
               },
               icon: const Icon(Icons.add),
-              label: const Text('Nova Transação'),
+              label: Text(l10n.newTransaction),
             )
           : null,
     );
@@ -94,6 +98,7 @@ class _HomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final transactionProvider = context.watch<TransactionProvider>();
     final categoryProvider = context.watch<CategoryProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -111,12 +116,13 @@ class _HomeTab extends StatelessWidget {
               ),
             ),
           ),
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
-                'Transações Recentes',
-                style: TextStyle(
+                l10n.recentTransactions,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -124,28 +130,28 @@ class _HomeTab extends StatelessWidget {
             ),
           ),
           if (transactionProvider.transactions.isEmpty)
-            const SliverFillRemaining(
+            SliverFillRemaining(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.receipt_long,
                       size: 64,
                       color: Colors.grey,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
-                      'Nenhuma transação registrada',
-                      style: TextStyle(
+                      l10n.noTransactionsRegistered,
+                      style: const TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Toque no botão + para adicionar',
-                      style: TextStyle(
+                      l10n.tapToAdd,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.grey,
                       ),

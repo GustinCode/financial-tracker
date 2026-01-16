@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../utils/formatters.dart';
 import '../utils/constants.dart';
 
@@ -16,15 +17,17 @@ class BalanceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Formatters.getLocaleFromContext(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Saldo Atual',
-              style: TextStyle(
+            Text(
+              l10n.currentBalance,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Colors.grey,
@@ -32,7 +35,7 @@ class BalanceDisplay extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              Formatters.formatCurrency(balance),
+              Formatters.formatCurrency(balance, locale),
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -45,17 +48,19 @@ class BalanceDisplay extends StatelessWidget {
               children: [
                 _buildInfoCard(
                   context,
-                  'Receitas',
+                  l10n.incomesLabel,
                   totalIncome,
                   AppConstants.incomeColor,
                   Icons.trending_up,
+                  locale,
                 ),
                 _buildInfoCard(
                   context,
-                  'Despesas',
+                  l10n.expensesLabel,
                   totalExpenses,
                   AppConstants.expenseColor,
                   Icons.trending_down,
+                  locale,
                 ),
               ],
             ),
@@ -71,6 +76,7 @@ class BalanceDisplay extends StatelessWidget {
     double value,
     Color color,
     IconData icon,
+    Locale? locale,
   ) {
     return Column(
       children: [
@@ -85,7 +91,7 @@ class BalanceDisplay extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          Formatters.formatCurrency(value),
+          Formatters.formatCurrency(value, locale),
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,

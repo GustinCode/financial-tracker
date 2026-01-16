@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 import 'models/transaction_model.dart';
 import 'models/category_model.dart';
 import 'providers/transaction_provider.dart';
 import 'providers/category_provider.dart';
 import 'services/database_service.dart';
+import 'services/localization_service.dart';
 import 'views/home_view.dart';
 
 void main() async {
@@ -25,8 +28,36 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale? _savedLocale;
+  int _rebuildKey = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLocale();
+  }
+
+  Future<void> _loadSavedLocale() async {
+    final locale = await LocalizationService.getSavedLocale();
+    setState(() {
+      _savedLocale = locale;
+    });
+  }
+
+  void _rebuildApp() {
+    setState(() {
+      _rebuildKey++;
+      _loadSavedLocale();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +76,17 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Financial Tracker',
         debugShowCheckedModeBanner: false,
+        // Localization configuration
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: LocalizationService.supportedLocales,
+        locale: _savedLocale,
+        key: ValueKey(_rebuildKey),
+        // Theme configuration
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.blue,
@@ -57,7 +99,9 @@ class MyApp extends StatelessWidget {
             margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           ),
         ),
-        home: const HomeView(),
+        home: HomeView(
+          onLocaleChanged: _rebuildApp,
+        ),
       ),
     );
   }

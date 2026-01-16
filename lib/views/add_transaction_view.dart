@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import '../l10n/app_localizations.dart';
 import '../models/transaction_model.dart';
 import '../models/category_model.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
 import '../utils/formatters.dart';
+import '../services/category_translation_service.dart';
 
 class AddTransactionView extends StatefulWidget {
   final Transaction? transaction;
@@ -100,8 +102,9 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     }
 
     if (_selectedCategory == null) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, selecione uma categoria')),
+        SnackBar(content: Text(l10n.pleaseSelectCategory)),
       );
       return;
     }
@@ -140,13 +143,12 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     }
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            isEditing
-                ? 'Transação atualizada com sucesso!'
-                : 'Transação adicionada com sucesso!',
+            isEditing ? l10n.transactionUpdated : l10n.transactionAdded,
           ),
         ),
       );
@@ -155,9 +157,10 @@ class _AddTransactionViewState extends State<AddTransactionView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Editar Transação' : 'Nova Transação'),
+        title: Text(isEditing ? l10n.editTransaction : l10n.newTransaction),
       ),
       body: SafeArea(
         child: Form(
@@ -177,25 +180,25 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Tipo',
-                        style: TextStyle(
+                      Text(
+                        l10n.type,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
                       SegmentedButton<TransactionType>(
-                        segments: const [
+                        segments: [
                           ButtonSegment<TransactionType>(
                             value: TransactionType.income,
-                            label: Text('Receita'),
-                            icon: Icon(Icons.trending_up),
+                            label: Text(l10n.income),
+                            icon: const Icon(Icons.trending_up),
                           ),
                           ButtonSegment<TransactionType>(
                             value: TransactionType.expense,
-                            label: Text('Despesa'),
-                            icon: Icon(Icons.trending_down),
+                            label: Text(l10n.expense),
+                            icon: const Icon(Icons.trending_down),
                           ),
                         ],
                         selected: {_selectedType},
@@ -213,17 +216,17 @@ class _AddTransactionViewState extends State<AddTransactionView> {
               // Título
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Título *',
-                  hintText: 'Ex: Salário, Almoço, etc.',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.title),
+                decoration: InputDecoration(
+                  labelText: l10n.titleRequired,
+                  hintText: l10n.titleHint,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.title),
                 ),
                 textInputAction: TextInputAction.next,
                 scrollPadding: const EdgeInsets.only(bottom: 80),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Por favor, insira um título';
+                    return l10n.pleaseEnterTitle;
                   }
                   return null;
                 },
@@ -233,11 +236,11 @@ class _AddTransactionViewState extends State<AddTransactionView> {
               // Valor
               TextFormField(
                 controller: _amountController,
-                decoration: const InputDecoration(
-                  labelText: 'Valor *',
+                decoration: InputDecoration(
+                  labelText: l10n.amountRequired,
                   hintText: '0.00',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.attach_money),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.attach_money),
                 ),
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
@@ -245,11 +248,11 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                 scrollPadding: const EdgeInsets.only(bottom: 80),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Por favor, insira um valor';
+                    return l10n.pleaseEnterAmount;
                   }
                   final amount = double.tryParse(value.replaceAll(',', '.'));
                   if (amount == null || amount <= 0) {
-                    return 'Por favor, insira um valor válido';
+                    return l10n.pleaseEnterValidAmount;
                   }
                   return null;
                 },
@@ -263,18 +266,18 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Categoria *',
-                        style: TextStyle(
+                      Text(
+                        l10n.categoryRequired,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
                       if (_availableCategories.isEmpty)
-                        const Text(
-                          'Nenhuma categoria disponível',
-                          style: TextStyle(color: Colors.grey),
+                        Text(
+                          l10n.noCategoryAvailable,
+                          style: const TextStyle(color: Colors.grey),
                         )
                       else
                         Wrap(
@@ -290,7 +293,9 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                                 children: [
                                   Text(category.icon),
                                   const SizedBox(width: 4),
-                                  Text(category.name),
+                                  Text(CategoryTranslationService
+                                      .translateCategoryName(
+                                          category, context)),
                                 ],
                               ),
                               onSelected: (selected) {
@@ -314,8 +319,9 @@ class _AddTransactionViewState extends State<AddTransactionView> {
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.calendar_today),
-                  title: const Text('Data'),
-                  subtitle: Text(Formatters.formatDate(_selectedDate)),
+                  title: Text(l10n.date),
+                  subtitle: Text(Formatters.formatDate(
+                      _selectedDate, Formatters.getLocaleFromContext(context))),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: _selectDate,
                 ),
@@ -325,11 +331,11 @@ class _AddTransactionViewState extends State<AddTransactionView> {
               // Descrição
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Descrição (opcional)',
-                  hintText: 'Observações adicionais...',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.description),
+                decoration: InputDecoration(
+                  labelText: l10n.descriptionOptional,
+                  hintText: l10n.descriptionHint,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.description),
                 ),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
@@ -349,8 +355,10 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                 ),
                 child: Text(
                   widget.returnTransactionOnly
-                      ? 'Adicionar à Lista'
-                      : (isEditing ? 'Atualizar Transação' : 'Salvar Transação'),
+                      ? l10n.addToList
+                      : (isEditing
+                          ? l10n.updateTransaction
+                          : l10n.saveTransaction),
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
