@@ -48,6 +48,9 @@ app.*.map.json
 *.lock
 
 
+/plans
+
+
 
 
 

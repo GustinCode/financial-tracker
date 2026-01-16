@@ -28,7 +28,7 @@ class SettingsView extends StatelessWidget {
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text('Versão'),
-            subtitle: Text('0.0.3'),
+            subtitle: Text('0.0.4'),
           ),
           const Divider(),
           const Padding(

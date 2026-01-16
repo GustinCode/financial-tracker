@@ -44,7 +44,6 @@ class _HomeViewState extends State<HomeView> {
         index: _selectedIndex,
         children: const [
           _HomeTab(),
-          InputDataView(),
           HistoryView(),
           SettingsView(),
         ],
@@ -56,10 +55,6 @@ class _HomeViewState extends State<HomeView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Início',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.playlist_add),
-            label: 'Lançar',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
@@ -77,7 +72,7 @@ class _HomeViewState extends State<HomeView> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AddTransactionView(),
+                    builder: (context) => const InputDataView(),
                   ),
                 );
                 if (context.mounted) {

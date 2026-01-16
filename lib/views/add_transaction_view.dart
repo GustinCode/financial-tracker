@@ -9,8 +9,13 @@ import '../utils/formatters.dart';
 
 class AddTransactionView extends StatefulWidget {
   final Transaction? transaction;
+  final bool returnTransactionOnly;
 
-  const AddTransactionView({super.key, this.transaction});
+  const AddTransactionView({
+    super.key,
+    this.transaction,
+    this.returnTransactionOnly = false,
+  });
 
   @override
   State<AddTransactionView> createState() => _AddTransactionViewState();
@@ -117,6 +122,14 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       createdAt: widget.transaction?.createdAt ?? DateTime.now(),
       updatedAt: DateTime.now(),
     );
+
+    if (widget.returnTransactionOnly) {
+      // Return transaction without saving (for InputDataView)
+      if (mounted) {
+        Navigator.pop(context, transaction);
+      }
+      return;
+    }
 
     final transactionProvider = context.read<TransactionProvider>();
 
@@ -335,7 +348,9 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                   ),
                 ),
                 child: Text(
-                  isEditing ? 'Atualizar Transação' : 'Salvar Transação',
+                  widget.returnTransactionOnly
+                      ? 'Adicionar à Lista'
+                      : (isEditing ? 'Atualizar Transação' : 'Salvar Transação'),
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
