@@ -98,5 +98,9 @@
   "categoryLeisure": "Leisure",
   "categoryShopping": "Shopping",
   "categoryBills": "Bills & Services",
-  "categoryOtherExpense": "Other Expenses"
+  "categoryOtherExpense": "Other Expenses",
+  "categories": "Categories",
+  "addCategory": "Add Category",
+  "manageCategories": "Manage Categories",
+  "createAndEditCategories": "Create and edit custom categories"
 }

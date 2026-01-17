@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/transaction_provider.dart';
 import '../services/localization_service.dart';
+import 'categories_view.dart';
 
 class SettingsView extends StatefulWidget {
   final VoidCallback? onLocaleChanged;
@@ -92,13 +93,28 @@ class _SettingsViewState extends State<SettingsView> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              l10n.data,
+              l10n.categories,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
+          ListTile(
+            leading: const Icon(Icons.category_outlined),
+            title: Text(l10n.manageCategories),
+            subtitle: Text(l10n.createAndEditCategories),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CategoriesView(),
+                ),
+              );
+            },
+          ),
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.delete_outline, color: Colors.red),
             title: Text(l10n.clearAllData),
@@ -219,20 +235,18 @@ class _LanguageSelectorDialogState extends State<_LanguageSelectorDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: LocalizationService.supportedLocales.map((locale) {
-            return ListTile(
+            return RadioListTile<Locale>(
               title: Text(LocalizationService.getDisplayName(locale, context)),
-              leading: Radio<Locale>(
-                value: locale,
-                groupValue: _selectedLocale,
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      _selectedLocale = value;
-                    });
-                    widget.onLocaleSelected(value);
-                  }
-                },
-              ),
+              value: locale,
+              groupValue: _selectedLocale,
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedLocale = value;
+                  });
+                  widget.onLocaleSelected(value);
+                }
+              },
             );
           }).toList(),
         ),

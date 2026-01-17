@@ -18,13 +18,15 @@ class CategoryAdapter extends TypeAdapter<Category> {
       colorValue: fields[3] as int,
       icon: fields[4] as String,
       isDefault: fields[5] as bool? ?? false,
+      parentCategoryId: fields[6] as String?,
+      isCustom: fields[7] as bool? ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, Category obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -36,7 +38,11 @@ class CategoryAdapter extends TypeAdapter<Category> {
       ..writeByte(4)
       ..write(obj.icon)
       ..writeByte(5)
-      ..write(obj.isDefault);
+      ..write(obj.isDefault)
+      ..writeByte(6)
+      ..write(obj.parentCategoryId)
+      ..writeByte(7)
+      ..write(obj.isCustom);
   }
 }
 
@@ -47,6 +53,8 @@ class Category extends HiveObject {
   int colorValue;
   String icon;
   bool isDefault;
+  String? parentCategoryId;
+  bool isCustom;
 
   Category({
     required this.id,
@@ -55,6 +63,8 @@ class Category extends HiveObject {
     required this.colorValue,
     required this.icon,
     this.isDefault = false,
+    this.parentCategoryId,
+    this.isCustom = false,
   });
 
   Category copyWith({
@@ -64,6 +74,8 @@ class Category extends HiveObject {
     int? colorValue,
     String? icon,
     bool? isDefault,
+    String? parentCategoryId,
+    bool? isCustom,
   }) {
     return Category(
       id: id ?? this.id,
@@ -72,6 +84,8 @@ class Category extends HiveObject {
       colorValue: colorValue ?? this.colorValue,
       icon: icon ?? this.icon,
       isDefault: isDefault ?? this.isDefault,
+      parentCategoryId: parentCategoryId ?? this.parentCategoryId,
+      isCustom: isCustom ?? this.isCustom,
     );
   }
 }

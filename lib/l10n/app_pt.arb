@@ -330,5 +330,9 @@
   "categoryLeisure": "Lazer",
   "categoryShopping": "Compras",
   "categoryBills": "Contas e Serviços",
-  "categoryOtherExpense": "Outras Despesas"
+  "categoryOtherExpense": "Outras Despesas",
+  "categories": "Categorias",
+  "addCategory": "Adicionar Categoria",
+  "manageCategories": "Gerenciar Categorias",
+  "createAndEditCategories": "Criar e editar categorias personalizadas"
 }

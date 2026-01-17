@@ -9,6 +9,7 @@ import 'add_transaction_view.dart';
 import 'history_view.dart';
 import 'settings_view.dart';
 import 'input_data_view.dart';
+import 'categories_view.dart';
 
 class HomeView extends StatefulWidget {
   final VoidCallback? onLocaleChanged;
@@ -91,8 +92,15 @@ class _HomeViewState extends State<HomeView> {
   }
 }
 
-class _HomeTab extends StatelessWidget {
+class _HomeTab extends StatefulWidget {
   const _HomeTab();
+
+  @override
+  State<_HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<_HomeTab> {
+  String? _selectedCategoryId;
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +108,31 @@ class _HomeTab extends StatelessWidget {
     final categoryProvider = context.watch<CategoryProvider>();
     final l10n = AppLocalizations.of(context)!;
 
+    // Get all categories that have transactions
+    final categoriesWithTransactions = <String, int>{};
+    for (var transaction in transactionProvider.transactions) {
+      categoriesWithTransactions[transaction.categoryId] =
+          (categoriesWithTransactions[transaction.categoryId] ?? 0) + 1;
+    }
+
+    // Get the categories to display (only those with transactions)
+    final categoriesToDisplay = categoryProvider.categories
+        .where((c) => categoriesWithTransactions.containsKey(c.id))
+        .toList();
+
+    // Filter transactions based on selected category
+    final filteredTransactions = _selectedCategoryId == null
+        ? transactionProvider.transactions
+        : transactionProvider.transactions
+            .where((t) => t.categoryId == _selectedCategoryId)
+            .toList();
+
     return RefreshIndicator(
       onRefresh: () async {
         await transactionProvider.loadTransactions();
+        setState(() {
+          _selectedCategoryId = null;
+        });
       },
       child: CustomScrollView(
         slivers: [
@@ -116,20 +146,309 @@ class _HomeTab extends StatelessWidget {
               ),
             ),
           ),
+          // Categories filter carousel - only show if there are transactions
+          if (transactionProvider.transactions.isNotEmpty)
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Text(
+                      l10n.categories,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      itemCount: categoriesToDisplay.length + 1,
+                      itemBuilder: (context, index) {
+                        // "All Categories" button
+                        if (index == 0) {
+                          final isSelected = _selectedCategoryId == null;
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedCategoryId = null;
+                                });
+                              },
+                              child: Card(
+                                elevation: isSelected ? 4 : 2,
+                                child: Container(
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: isSelected
+                                        ? Colors.blue.shade50
+                                        : Colors.white,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 50,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? Colors.blue
+                                              : Colors.grey.shade200,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '✓',
+                                            style: TextStyle(
+                                              fontSize: 28,
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        l10n.all,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        // Category buttons
+                        final category = categoriesToDisplay[index - 1];
+                        final isSelected = _selectedCategoryId == category.id;
+                        final transactionCount =
+                            categoriesWithTransactions[category.id] ?? 0;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (_selectedCategoryId == category.id) {
+                                  _selectedCategoryId = null;
+                                } else {
+                                  _selectedCategoryId = category.id;
+                                }
+                              });
+                            },
+                            child: Card(
+                              elevation: isSelected ? 4 : 2,
+                              child: Container(
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: isSelected
+                                      ? Color(category.colorValue)
+                                          .withValues(alpha: 0.2)
+                                      : Colors.white,
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Stack(
+                                      alignment: Alignment.topRight,
+                                      children: [
+                                        Container(
+                                          width: 50,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: Color(category.colorValue),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: isSelected
+                                                ? Border.all(
+                                                    color: Color(
+                                                        category.colorValue),
+                                                    width: 3,
+                                                  )
+                                                : null,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              category.icon,
+                                              style:
+                                                  const TextStyle(fontSize: 28),
+                                            ),
+                                          ),
+                                        ),
+                                        if (isSelected)
+                                          Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: const Center(
+                                              child: Text(
+                                                '✓',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              category.name,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              '($transactionCount)',
+                                              style: TextStyle(
+                                                fontSize: 9,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          // Add Category button - only show when no transactions
+          if (transactionProvider.transactions.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CategoriesView(),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 2,
+                    child: Container(
+                      height: 120,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              size: 32,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            l10n.addCategory,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.noTransactionsRegistered,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          // Recent transactions section
           SliverToBoxAdapter(
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(
-                l10n.recentTransactions,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.recentTransactions,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (_selectedCategoryId != null)
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _selectedCategoryId = null;
+                        });
+                      },
+                      icon: const Icon(Icons.clear, size: 18),
+                      label: Text(l10n.all),
+                    ),
+                ],
               ),
             ),
           ),
-          if (transactionProvider.transactions.isEmpty)
+          // Transactions list
+          if (filteredTransactions.isEmpty)
             SliverFillRemaining(
               child: Center(
                 child: Column(
@@ -142,7 +461,9 @@ class _HomeTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      l10n.noTransactionsRegistered,
+                      _selectedCategoryId != null
+                          ? l10n.noTransactionsRegistered
+                          : l10n.noTransactionsRegistered,
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
@@ -164,7 +485,7 @@ class _HomeTab extends StatelessWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  final transaction = transactionProvider.transactions[index];
+                  final transaction = filteredTransactions[index];
                   final category =
                       categoryProvider.getCategoryById(transaction.categoryId);
                   return TransactionCard(
@@ -181,6 +502,9 @@ class _HomeTab extends StatelessWidget {
                       );
                       if (context.mounted) {
                         transactionProvider.loadTransactions();
+                        setState(() {
+                          _selectedCategoryId = null;
+                        });
                       }
                     },
                     onDelete: () {
@@ -188,9 +512,9 @@ class _HomeTab extends StatelessWidget {
                     },
                   );
                 },
-                childCount: transactionProvider.transactions.length > 10
-                    ? 10
-                    : transactionProvider.transactions.length,
+                childCount: filteredTransactions.length > 5
+                    ? 5
+                    : filteredTransactions.length,
               ),
             ),
         ],
