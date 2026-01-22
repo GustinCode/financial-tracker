@@ -332,6 +332,7 @@
   "categoryBills": "Contas e Serviços",
   "categoryOtherExpense": "Outras Despesas",
   "categories": "Categorias",
+  "viewCategories": "Ver Categorias",
   "addCategory": "Adicionar Categoria",
   "manageCategories": "Gerenciar Categorias",
   "createAndEditCategories": "Criar e editar categorias personalizadas"

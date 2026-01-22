@@ -100,6 +100,7 @@
   "categoryBills": "Bills & Services",
   "categoryOtherExpense": "Other Expenses",
   "categories": "Categories",
+  "viewCategories": "View Categories",
   "addCategory": "Add Category",
   "manageCategories": "Manage Categories",
   "createAndEditCategories": "Create and edit custom categories"

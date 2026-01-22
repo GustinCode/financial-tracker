@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
+import '../services/category_translation_service.dart';
 import '../widgets/balance_display.dart';
 import '../widgets/transaction_card.dart';
 import 'add_transaction_view.dart';
@@ -324,7 +325,9 @@ class _HomeTabState extends State<_HomeTab> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              category.name,
+                                              CategoryTranslationService
+                                                  .translateCategoryName(
+                                                      category, context),
                                               textAlign: TextAlign.center,
                                               style: const TextStyle(
                                                 fontSize: 11,
@@ -395,7 +398,7 @@ class _HomeTabState extends State<_HomeTab> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            l10n.addCategory,
+                            l10n.viewCategories,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 14,
