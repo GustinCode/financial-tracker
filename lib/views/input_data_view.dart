@@ -5,6 +5,8 @@ import '../l10n/app_localizations.dart';
 import '../models/transaction_model.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
+import '../providers/budget_provider.dart';
+import '../models/budget_model.dart';
 import '../utils/formatters.dart';
 import '../services/category_translation_service.dart';
 import 'add_transaction_view.dart';
@@ -55,11 +57,39 @@ class _InputDataViewState extends State<InputDataView> {
     }
 
     final transactionProvider = context.read<TransactionProvider>();
+    final budgetProvider = context.read<BudgetProvider>();
+    final categoryProvider = context.read<CategoryProvider>();
     final count = _pendingTransactions.length;
+    final budgetAlerts = <({String message, bool exceeded})>[];
 
     for (final transaction in _pendingTransactions) {
       await transactionProvider.addTransaction(transaction);
+
+      if (transaction.type == TransactionType.expense) {
+        final alertStatus = await budgetProvider.checkBudgetAlertAfterTransaction(
+          transaction.categoryId,
+          transaction.date,
+        );
+        if (alertStatus != null) {
+          final category =
+              categoryProvider.getCategoryById(transaction.categoryId);
+          final categoryName = category != null
+              ? CategoryTranslationService.translateCategoryName(
+                  category,
+                  context,
+                )
+              : transaction.categoryId;
+          budgetAlerts.add((
+            message: alertStatus == BudgetStatus.exceeded
+                ? l10n.budgetExceededAlert(categoryName)
+                : l10n.budgetWarningAlert(categoryName),
+            exceeded: alertStatus == BudgetStatus.exceeded,
+          ));
+        }
+      }
     }
+
+    await budgetProvider.loadBudgets();
 
     setState(() {
       _pendingTransactions.clear();
@@ -74,6 +104,18 @@ class _InputDataViewState extends State<InputDataView> {
           backgroundColor: Colors.green,
         ),
       );
+
+      final shownAlerts = <String>{};
+      for (final alert in budgetAlerts) {
+        if (shownAlerts.add(alert.message)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(alert.message),
+              backgroundColor: alert.exceeded ? Colors.red : Colors.orange,
+            ),
+          );
+        }
+      }
     }
   }
 

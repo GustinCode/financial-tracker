@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/transaction_model.dart';
 import '../models/category_model.dart';
+import '../models/budget_model.dart';
 import '../repositories/category_repository.dart';
 
 class DatabaseService {
   static const String transactionsBoxName = 'transactions';
   static const String categoriesBoxName = 'categories';
+  static const String budgetsBoxName = 'budgets';
 
   static Future<void> initialize() async {
     // Abrir boxes
     await Hive.openBox<Transaction>(transactionsBoxName);
     await Hive.openBox<Category>(categoriesBoxName);
+    await Hive.openBox<Budget>(budgetsBoxName);
 
     // Verificar se já existem categorias padrão
     final categoryBox = Hive.box<Category>(categoriesBoxName);

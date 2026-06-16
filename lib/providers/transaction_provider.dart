@@ -50,6 +50,44 @@ class TransactionProvider extends ChangeNotifier {
     return _transactions.where((t) => t.categoryId == categoryId).toList();
   }
 
+  List<Transaction> getTransactionsForMonth(int year, int month) {
+    final start = DateTime(year, month, 1);
+    final end = DateTime(year, month + 1, 0, 23, 59, 59, 999);
+    return _transactions.where((t) {
+      return !t.date.isBefore(start) && !t.date.isAfter(end);
+    }).toList();
+  }
+
+  double getMonthlyExpensesForCategory(
+    String categoryId,
+    int year,
+    int month,
+  ) {
+    return getTransactionsForMonth(year, month)
+        .where(
+          (t) =>
+              t.type == TransactionType.expense && t.categoryId == categoryId,
+        )
+        .fold(0.0, (sum, t) => sum + t.amount);
+  }
+
+  double getMonthlyTotalIncome(int year, int month) {
+    return getTransactionsForMonth(year, month)
+        .where((t) => t.type == TransactionType.income)
+        .fold(0.0, (sum, t) => sum + t.amount);
+  }
+
+  double getMonthlyTotalExpenses(int year, int month) {
+    return getTransactionsForMonth(year, month)
+        .where((t) => t.type == TransactionType.expense)
+        .fold(0.0, (sum, t) => sum + t.amount);
+  }
+
+  double getMonthlyBalance(int year, int month) {
+    return getMonthlyTotalIncome(year, month) -
+        getMonthlyTotalExpenses(year, month);
+  }
+
   void _recalculateTotals() {
     _totalIncome = _transactions
         .where((t) => t.type == TransactionType.income)

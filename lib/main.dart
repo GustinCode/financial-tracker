@@ -5,8 +5,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'models/transaction_model.dart';
 import 'models/category_model.dart';
+import 'models/budget_model.dart';
 import 'providers/transaction_provider.dart';
 import 'providers/category_provider.dart';
+import 'providers/budget_provider.dart';
 import 'services/database_service.dart';
 import 'services/localization_service.dart';
 import 'views/home_view.dart';
@@ -21,6 +23,7 @@ void main() async {
   Hive.registerAdapter(TransactionAdapter());
   Hive.registerAdapter(CategoryAdapter());
   Hive.registerAdapter(TransactionTypeAdapter());
+  Hive.registerAdapter(BudgetAdapter());
 
   // Inicializar banco de dados
   await DatabaseService.initialize();
@@ -71,6 +74,14 @@ class _MyAppState extends State<MyApp> {
           update: (_, categoryProvider, previous) =>
               previous ?? TransactionProvider()
                 ..categoryProvider = categoryProvider,
+        ),
+        ChangeNotifierProxyProvider2<CategoryProvider, TransactionProvider,
+            BudgetProvider>(
+          create: (_) => BudgetProvider(),
+          update: (_, categoryProvider, transactionProvider, previous) =>
+              previous ?? BudgetProvider()
+                ..categoryProvider = categoryProvider
+                ..transactionProvider = transactionProvider,
         ),
       ],
       child: MaterialApp(

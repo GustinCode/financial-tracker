@@ -335,5 +335,59 @@
   "viewCategories": "Ver Categorias",
   "addCategory": "Adicionar Categoria",
   "manageCategories": "Gerenciar Categorias",
-  "createAndEditCategories": "Criar e editar categorias personalizadas"
+  "createAndEditCategories": "Criar e editar categorias personalizadas",
+  "budgets": "Orçamentos",
+  "monthlyBudgets": "Orçamentos do Mês",
+  "manageBudgets": "Gerenciar Orçamentos",
+  "manageBudgetsDescription": "Definir limites mensais de gastos por categoria",
+  "addBudget": "Adicionar Orçamento",
+  "editBudget": "Editar Orçamento",
+  "saveBudget": "Salvar Orçamento",
+  "updateBudget": "Atualizar Orçamento",
+  "deleteBudget": "Excluir Orçamento",
+  "confirmDeleteBudget": "Tem certeza que deseja excluir este orçamento?",
+  "monthlyLimit": "Limite Mensal",
+  "monthlyLimitHint": "Ex: 500,00",
+  "budgetCreated": "Orçamento criado com sucesso!",
+  "budgetUpdated": "Orçamento atualizado com sucesso!",
+  "budgetAlreadyExists": "Já existe um orçamento para esta categoria neste mês",
+  "noBudgetsForMonth": "Nenhum orçamento para este mês",
+  "noBudgetsHint": "Toque em + para definir um limite de gasto por categoria",
+  "currentMonth": "Mês atual",
+  "viewAll": "Ver todos",
+  "budgetStatusOk": "Dentro do limite",
+  "budgetStatusWarning": "Próximo do limite",
+  "budgetStatusExceeded": "Orçamento estourado",
+  "budgetRemaining": "Restante: {amount}",
+  "@budgetRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetOverBy": "Excedido em {amount}",
+  "@budgetOverBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetWarningAlert": "Atenção: você atingiu 80% do orçamento de {category}",
+  "@budgetWarningAlert": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetExceededAlert": "Orçamento estourado em {category}",
+  "@budgetExceededAlert": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -32,7 +32,6 @@ class Formatters {
   }
 
   static String formatDate(DateTime date, [Locale? locale]) {
-    // Default date format based on locale
     String dateFormat;
     if (locale == null) {
       dateFormat = 'dd/MM/yyyy';
@@ -56,6 +55,10 @@ class Formatters {
       }
     }
     return DateFormat(dateFormat, locale?.toString() ?? 'pt_BR').format(date);
+  }
+
+  static String formatMonthYear(DateTime date, [Locale? locale]) {
+    return DateFormat('MMMM yyyy', locale?.toString() ?? 'pt_BR').format(date);
   }
 
   static String formatDateTime(DateTime date, [Locale? locale]) {

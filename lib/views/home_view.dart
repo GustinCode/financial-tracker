@@ -11,6 +11,9 @@ import 'history_view.dart';
 import 'settings_view.dart';
 import 'input_data_view.dart';
 import 'categories_view.dart';
+import '../providers/budget_provider.dart';
+import '../widgets/budget_summary_section.dart';
+import 'budgets_view.dart';
 
 class HomeView extends StatefulWidget {
   final VoidCallback? onLocaleChanged;
@@ -29,6 +32,8 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TransactionProvider>().loadTransactions();
+      final budgetProvider = context.read<BudgetProvider>();
+      budgetProvider.goToCurrentMonth();
     });
   }
 
@@ -51,6 +56,7 @@ class _HomeViewState extends State<HomeView> {
         children: [
           const _HomeTab(),
           const HistoryView(),
+          const BudgetsView(),
           SettingsView(onLocaleChanged: widget.onLocaleChanged),
         ],
       ),
@@ -65,6 +71,10 @@ class _HomeViewState extends State<HomeView> {
           BottomNavigationBarItem(
             icon: const Icon(Icons.history),
             label: l10n.history,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.pie_chart_outline),
+            label: l10n.budgets,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings),
@@ -83,6 +93,7 @@ class _HomeViewState extends State<HomeView> {
                 );
                 if (context.mounted) {
                   context.read<TransactionProvider>().loadTransactions();
+                  context.read<BudgetProvider>().loadBudgets();
                 }
               },
               icon: const Icon(Icons.add),
@@ -146,6 +157,9 @@ class _HomeTabState extends State<_HomeTab> {
                 totalExpenses: transactionProvider.totalExpenses,
               ),
             ),
+          ),
+          const SliverToBoxAdapter(
+            child: BudgetSummarySection(),
           ),
           // Categories filter carousel - only show if there are transactions
           if (transactionProvider.transactions.isNotEmpty)

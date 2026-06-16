@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/transaction_provider.dart';
+import '../providers/budget_provider.dart';
 import '../services/localization_service.dart';
 import 'categories_view.dart';
+import 'budgets_view.dart';
 
 class SettingsView extends StatefulWidget {
   final VoidCallback? onLocaleChanged;
@@ -41,6 +43,7 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
     final transactionProvider = context.read<TransactionProvider>();
+    final budgetProvider = context.read<BudgetProvider>();
     final l10n = AppLocalizations.of(context)!;
     // Force rebuild when locale changes
     final currentLocale = Localizations.localeOf(context);
@@ -114,6 +117,20 @@ class _SettingsViewState extends State<SettingsView> {
               );
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.pie_chart_outline),
+            title: Text(l10n.manageBudgets),
+            subtitle: Text(l10n.manageBudgetsDescription),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BudgetsView(),
+                ),
+              );
+            },
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.delete_outline, color: Colors.red),
@@ -137,6 +154,7 @@ class _SettingsViewState extends State<SettingsView> {
                           await transactionProvider
                               .deleteTransaction(transaction.id);
                         }
+                        await budgetProvider.deleteAllBudgets();
                         if (context.mounted) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(

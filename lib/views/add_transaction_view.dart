@@ -6,6 +6,8 @@ import '../models/transaction_model.dart';
 import '../models/category_model.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
+import '../providers/budget_provider.dart';
+import '../models/budget_model.dart';
 import '../utils/formatters.dart';
 import '../services/category_translation_service.dart';
 
@@ -135,6 +137,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     }
 
     final transactionProvider = context.read<TransactionProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     if (isEditing) {
       await transactionProvider.updateTransaction(transaction);
@@ -142,8 +145,32 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       await transactionProvider.addTransaction(transaction);
     }
 
+    if (mounted && _selectedType == TransactionType.expense) {
+      final budgetProvider = context.read<BudgetProvider>();
+      final alertStatus = await budgetProvider.checkBudgetAlertAfterTransaction(
+        _selectedCategory!.id,
+        _selectedDate,
+      );
+      if (alertStatus != null && mounted) {
+        final categoryName = CategoryTranslationService.translateCategoryName(
+          _selectedCategory!,
+          context,
+        );
+        final message = alertStatus == BudgetStatus.exceeded
+            ? l10n.budgetExceededAlert(categoryName)
+            : l10n.budgetWarningAlert(categoryName);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: alertStatus == BudgetStatus.exceeded
+                ? Colors.red
+                : Colors.orange,
+          ),
+        );
+      }
+    }
+
     if (mounted) {
-      final l10n = AppLocalizations.of(context)!;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
