@@ -1,7 +1,12 @@
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:financial_tracker/utils/formatters.dart';
 
 void main() {
+  setUpAll(() async {
+    await initializeDateFormatting();
+  });
+
   group('Formatters', () {
     test('formatCurrency should format value correctly', () {
       final result1 = Formatters.formatCurrency(100.50);

@@ -28,8 +28,8 @@ class BalanceDisplay extends StatelessWidget {
             Text(
               l10n.currentBalance,
               style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
                 color: Colors.grey,
               ),
             ),
@@ -37,30 +37,37 @@ class BalanceDisplay extends StatelessWidget {
             Text(
               Formatters.formatCurrency(balance, locale),
               style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: balance >= 0 ? AppConstants.incomeColor : AppConstants.expenseColor,
+                fontSize: 30,
+                height: 1.05,
+                fontWeight: FontWeight.w700,
+                color: balance >= 0
+                    ? AppConstants.incomeColor
+                    : AppConstants.expenseColor,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildInfoCard(
-                  context,
-                  l10n.incomesLabel,
-                  totalIncome,
-                  AppConstants.incomeColor,
-                  Icons.trending_up,
-                  locale,
+                Expanded(
+                  child: _buildInfoTile(
+                    context,
+                    l10n.incomesLabel,
+                    totalIncome,
+                    AppConstants.incomeColor,
+                    Icons.trending_up,
+                    locale,
+                  ),
                 ),
-                _buildInfoCard(
-                  context,
-                  l10n.expensesLabel,
-                  totalExpenses,
-                  AppConstants.expenseColor,
-                  Icons.trending_down,
-                  locale,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildInfoTile(
+                    context,
+                    l10n.expensesLabel,
+                    totalExpenses,
+                    AppConstants.expenseColor,
+                    Icons.trending_down,
+                    locale,
+                  ),
                 ),
               ],
             ),
@@ -70,7 +77,7 @@ class BalanceDisplay extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard(
+  Widget _buildInfoTile(
     BuildContext context,
     String label,
     double value,
@@ -78,27 +85,42 @@ class BalanceDisplay extends StatelessWidget {
     IconData icon,
     Locale? locale,
   ) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          Formatters.formatCurrency(value, locale),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
+          const SizedBox(height: 8),
+          Text(
+            Formatters.formatCurrency(value, locale),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

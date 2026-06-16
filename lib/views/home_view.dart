@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../l10n/app_localizations.dart';
-import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
+import '../providers/transaction_provider.dart';
 import '../widgets/balance_display.dart';
 import '../widgets/transaction_card.dart';
 import 'add_transaction_view.dart';
-import 'history_view.dart';
-import 'settings_view.dart';
-import 'input_data_view.dart';
 import 'categories_view.dart';
+import 'dashboard_view.dart';
+import 'history_view.dart';
+import 'input_data_view.dart';
+import 'settings_view.dart';
 
 class HomeView extends StatefulWidget {
   final VoidCallback? onLocaleChanged;
@@ -31,44 +33,35 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.appTitle),
-        elevation: 0,
-      ),
+      appBar: _selectedIndex == 0
+          ? AppBar(
+              title: Text(l10n.appTitle),
+              elevation: 0,
+            )
+          : null,
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          const _HomeTab(),
+          const _OverviewTab(),
+          const DashboardView(),
           const HistoryView(),
           SettingsView(onLocaleChanged: widget.onLocaleChanged),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) => setState(() => _selectedIndex = index),
         items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: l10n.home,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.history),
-            label: l10n.history,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.settings),
-            label: l10n.settings,
-          ),
+          BottomNavigationBarItem(icon: const Icon(Icons.home), label: l10n.home),
+          const BottomNavigationBarItem(icon: Icon(Icons.insights_outlined), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: const Icon(Icons.history), label: l10n.history),
+          BottomNavigationBarItem(icon: const Icon(Icons.settings), label: l10n.settings),
         ],
       ),
       floatingActionButton: _selectedIndex == 0
@@ -76,9 +69,7 @@ class _HomeViewState extends State<HomeView> {
               onPressed: () async {
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const InputDataView(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const InputDataView()),
                 );
                 if (context.mounted) {
                   context.read<TransactionProvider>().loadTransactions();
@@ -92,14 +83,14 @@ class _HomeViewState extends State<HomeView> {
   }
 }
 
-class _HomeTab extends StatefulWidget {
-  const _HomeTab();
+class _OverviewTab extends StatefulWidget {
+  const _OverviewTab();
 
   @override
-  State<_HomeTab> createState() => _HomeTabState();
+  State<_OverviewTab> createState() => _OverviewTabState();
 }
 
-class _HomeTabState extends State<_HomeTab> {
+class _OverviewTabState extends State<_OverviewTab> {
   String? _selectedCategoryId;
 
   @override
@@ -108,23 +99,23 @@ class _HomeTabState extends State<_HomeTab> {
     final categoryProvider = context.watch<CategoryProvider>();
     final l10n = AppLocalizations.of(context)!;
 
-    // Get all categories that have transactions
     final categoriesWithTransactions = <String, int>{};
-    for (var transaction in transactionProvider.transactions) {
-      categoriesWithTransactions[transaction.categoryId] =
-          (categoriesWithTransactions[transaction.categoryId] ?? 0) + 1;
+    for (final transaction in transactionProvider.transactions) {
+      categoriesWithTransactions.update(
+        transaction.categoryId,
+        (value) => value + 1,
+        ifAbsent: () => 1,
+      );
     }
 
-    // Get the categories to display (only those with transactions)
     final categoriesToDisplay = categoryProvider.categories
-        .where((c) => categoriesWithTransactions.containsKey(c.id))
+        .where((category) => categoriesWithTransactions.containsKey(category.id))
         .toList();
 
-    // Filter transactions based on selected category
     final filteredTransactions = _selectedCategoryId == null
         ? transactionProvider.transactions
         : transactionProvider.transactions
-            .where((t) => t.categoryId == _selectedCategoryId)
+            .where((transaction) => transaction.categoryId == _selectedCategoryId)
             .toList();
 
     return RefreshIndicator(
@@ -135,6 +126,7 @@ class _HomeTabState extends State<_HomeTab> {
         });
       },
       child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
@@ -146,292 +138,94 @@ class _HomeTabState extends State<_HomeTab> {
               ),
             ),
           ),
-          // Categories filter carousel - only show if there are transactions
           if (transactionProvider.transactions.isNotEmpty)
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Text(
                       l10n.categories,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  SizedBox(
-                    height: 120,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      itemCount: categoriesToDisplay.length + 1,
-                      itemBuilder: (context, index) {
-                        // "All Categories" button
-                        if (index == 0) {
-                          final isSelected = _selectedCategoryId == null;
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _selectedCategoryId = null;
-                                });
-                              },
-                              child: Card(
-                                elevation: isSelected ? 4 : 2,
-                                child: Container(
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: isSelected
-                                        ? Colors.blue.shade50
-                                        : Colors.white,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 50,
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? Colors.blue
-                                              : Colors.grey.shade200,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            '✓',
-                                            style: TextStyle(
-                                              fontSize: 28,
-                                              color: isSelected
-                                                  ? Colors.white
-                                                  : Colors.grey,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        l10n.all,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        FilterChip(
+                          label: Text(l10n.all),
+                          selected: _selectedCategoryId == null,
+                          onSelected: (_) {
+                            setState(() {
+                              _selectedCategoryId = null;
+                            });
+                          },
+                          showCheckmark: false,
+                        ),
+                        ...categoriesToDisplay.map((category) {
+                          final isSelected = _selectedCategoryId == category.id;
+                          final transactionCount = categoriesWithTransactions[category.id] ?? 0;
+                          return FilterChip(
+                            avatar: CircleAvatar(
+                              backgroundColor: Color(category.colorValue).withValues(alpha: 0.14),
+                              child: Text(category.icon, style: const TextStyle(fontSize: 12)),
                             ),
-                          );
-                        }
-
-                        // Category buttons
-                        final category = categoriesToDisplay[index - 1];
-                        final isSelected = _selectedCategoryId == category.id;
-                        final transactionCount =
-                            categoriesWithTransactions[category.id] ?? 0;
-
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: GestureDetector(
-                            onTap: () {
+                            label: Text('${category.name} ($transactionCount)'),
+                            selected: isSelected,
+                            onSelected: (_) {
                               setState(() {
-                                if (_selectedCategoryId == category.id) {
-                                  _selectedCategoryId = null;
-                                } else {
-                                  _selectedCategoryId = category.id;
-                                }
+                                _selectedCategoryId = isSelected ? null : category.id;
                               });
                             },
-                            child: Card(
-                              elevation: isSelected ? 4 : 2,
-                              child: Container(
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: isSelected
-                                      ? Color(category.colorValue)
-                                          .withValues(alpha: 0.2)
-                                      : Colors.white,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.topRight,
-                                      children: [
-                                        Container(
-                                          width: 50,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            color: Color(category.colorValue),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            border: isSelected
-                                                ? Border.all(
-                                                    color: Color(
-                                                        category.colorValue),
-                                                    width: 3,
-                                                  )
-                                                : null,
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              category.icon,
-                                              style:
-                                                  const TextStyle(fontSize: 28),
-                                            ),
-                                          ),
-                                        ),
-                                        if (isSelected)
-                                          Container(
-                                            width: 20,
-                                            height: 20,
-                                            decoration: BoxDecoration(
-                                              color: Colors.blue,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: const Center(
-                                              child: Text(
-                                                '✓',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 4.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              category.name,
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            Text(
-                                              '($transactionCount)',
-                                              style: TextStyle(
-                                                fontSize: 9,
-                                                color: Colors.grey.shade600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+                            showCheckmark: false,
+                          );
+                        }),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-          // Add Category button - only show when no transactions
           if (transactionProvider.transactions.isEmpty)
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CategoriesView(),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    elevation: 2,
-                    child: Container(
-                      height: 120,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.add,
-                              size: 32,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            l10n.addCategory,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.noTransactionsRegistered,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
+                child: Card(
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16),
+                    leading: const CircleAvatar(child: Icon(Icons.add)),
+                    title: Text(
+                      l10n.addCategory,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(l10n.noTransactionsRegistered),
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CategoriesView()),
+                      );
+                    },
                   ),
                 ),
               ),
             ),
-          // Recent transactions section
           SliverToBoxAdapter(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     l10n.recentTransactions,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   if (_selectedCategoryId != null)
                     TextButton.icon(
@@ -447,35 +241,22 @@ class _HomeTabState extends State<_HomeTab> {
               ),
             ),
           ),
-          // Transactions list
           if (filteredTransactions.isEmpty)
             SliverFillRemaining(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.receipt_long,
-                      size: 64,
-                      color: Colors.grey,
-                    ),
+                    const Icon(Icons.receipt_long, size: 64, color: Colors.grey),
                     const SizedBox(height: 16),
                     Text(
-                      _selectedCategoryId != null
-                          ? l10n.noTransactionsRegistered
-                          : l10n.noTransactionsRegistered,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                      l10n.noTransactionsRegistered,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.tapToAdd,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -486,8 +267,7 @@ class _HomeTabState extends State<_HomeTab> {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final transaction = filteredTransactions[index];
-                  final category =
-                      categoryProvider.getCategoryById(transaction.categoryId);
+                  final category = categoryProvider.getCategoryById(transaction.categoryId);
                   return TransactionCard(
                     transaction: transaction,
                     category: category,
@@ -495,9 +275,7 @@ class _HomeTabState extends State<_HomeTab> {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddTransactionView(
-                            transaction: transaction,
-                          ),
+                          builder: (context) => AddTransactionView(transaction: transaction),
                         ),
                       );
                       if (context.mounted) {
@@ -512,9 +290,7 @@ class _HomeTabState extends State<_HomeTab> {
                     },
                   );
                 },
-                childCount: filteredTransactions.length > 5
-                    ? 5
-                    : filteredTransactions.length,
+                childCount: filteredTransactions.length > 5 ? 5 : filteredTransactions.length,
               ),
             ),
         ],
