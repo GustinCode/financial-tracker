@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:financial_tracker/models/category_model.dart' as models;
 import 'package:financial_tracker/models/transaction_model.dart';
+import 'package:financial_tracker/l10n/app_localizations.dart';
 import 'package:financial_tracker/providers/category_provider.dart';
 import 'package:financial_tracker/providers/transaction_provider.dart';
 import 'package:financial_tracker/views/add_transaction_view.dart';
@@ -49,6 +51,20 @@ void main() {
     late FakeTransactionProvider transactionProvider;
     late models.Category expenseCategory;
 
+    Widget buildTestApp(Widget child) {
+      return MaterialApp(
+        locale: const Locale('pt', 'BR'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: child,
+      );
+    }
+
     setUp(() {
       expenseCategory = models.Category(
         id: 'cat-expense-1',
@@ -74,9 +90,7 @@ void main() {
               value: transactionProvider,
             ),
           ],
-          child: const MaterialApp(
-            home: AddTransactionView(),
-          ),
+          child: buildTestApp(const AddTransactionView()),
         ),
       );
 
@@ -109,9 +123,7 @@ void main() {
               value: transactionProvider,
             ),
           ],
-          child: MaterialApp(
-            home: AddTransactionView(transaction: existing),
-          ),
+          child: buildTestApp(AddTransactionView(transaction: existing)),
         ),
       );
 

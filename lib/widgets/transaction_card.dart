@@ -26,10 +26,19 @@ class TransactionCard extends StatelessWidget {
     final categoryColor = category != null
         ? Color(category!.colorValue)
         : (isIncome ? AppConstants.incomeColor : AppConstants.expenseColor);
+    final locale = Formatters.getLocaleFromContext(context);
+    final categoryLabel = category == null
+        ? null
+        : CategoryTranslationService.translateCategoryName(category!, context);
+    final subtitleParts = <String>[
+      if (categoryLabel != null) categoryLabel,
+      Formatters.formatDate(transaction.date, locale),
+    ];
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
           backgroundColor: categoryColor.withValues(alpha: 0.2),
           child: Text(
@@ -47,17 +56,8 @@ class TransactionCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 4),
-            if (category != null)
-              Text(
-                CategoryTranslationService.translateCategoryName(category!, context),
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
-              ),
             Text(
-              Formatters.formatDate(transaction.date, Formatters.getLocaleFromContext(context)),
+              subtitleParts.join(' • '),
               style: TextStyle(
                 color: Colors.grey[500],
                 fontSize: 12,
@@ -70,7 +70,7 @@ class TransactionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              '${isIncome ? '+' : '-'}${Formatters.formatCurrency(transaction.amount, Formatters.getLocaleFromContext(context))}',
+              '${isIncome ? '+' : '-'}${Formatters.formatCurrency(transaction.amount, locale)}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

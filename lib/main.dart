@@ -5,8 +5,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'models/transaction_model.dart';
 import 'models/category_model.dart';
+import 'models/budget_model.dart';
 import 'providers/transaction_provider.dart';
 import 'providers/category_provider.dart';
+import 'providers/budget_provider.dart';
 import 'services/database_service.dart';
 import 'services/localization_service.dart';
 import 'views/home_view.dart';
@@ -21,6 +23,7 @@ void main() async {
   Hive.registerAdapter(TransactionAdapter());
   Hive.registerAdapter(CategoryAdapter());
   Hive.registerAdapter(TransactionTypeAdapter());
+  Hive.registerAdapter(BudgetAdapter());
 
   // Inicializar banco de dados
   await DatabaseService.initialize();
@@ -66,6 +69,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (_) => CategoryProvider()..loadCategories(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => BudgetProvider()..loadBudgets(),
+        ),
         ChangeNotifierProxyProvider<CategoryProvider, TransactionProvider>(
           create: (_) => TransactionProvider(),
           update: (_, categoryProvider, previous) =>
@@ -89,14 +95,48 @@ class _MyAppState extends State<MyApp> {
         // Theme configuration
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue,
-            primary: Colors.blue,
-            secondary: Colors.green,
+            seedColor: const Color(0xFF0F766E),
           ),
           useMaterial3: true,
+          scaffoldBackgroundColor: const Color(0xFFF7F8FA),
+          appBarTheme: const AppBarTheme(
+            centerTitle: false,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+          ),
           cardTheme: const CardThemeData(
-            elevation: 2,
+            elevation: 0.8,
             margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(18)),
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+          ),
+          chipTheme: ChipThemeData(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           ),
         ),
         home: HomeView(
