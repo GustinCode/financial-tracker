@@ -64,12 +64,14 @@ class _InputDataViewState extends State<InputDataView> {
 
     for (final transaction in _pendingTransactions) {
       await transactionProvider.addTransaction(transaction);
+      if (!mounted) return;
 
       if (transaction.type == TransactionType.expense) {
         final alertStatus = await budgetProvider.checkBudgetAlertAfterTransaction(
           transaction.categoryId,
           transaction.date,
         );
+        if (!mounted) return;
         if (alertStatus != null) {
           final category =
               categoryProvider.getCategoryById(transaction.categoryId);

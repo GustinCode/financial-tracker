@@ -69,21 +69,17 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (_) => CategoryProvider()..loadCategories(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => BudgetProvider()..loadBudgets(),
-        ),
         ChangeNotifierProxyProvider<CategoryProvider, TransactionProvider>(
           create: (_) => TransactionProvider(),
           update: (_, categoryProvider, previous) =>
-              previous ?? TransactionProvider()
+              (previous ?? TransactionProvider())
                 ..categoryProvider = categoryProvider,
         ),
         ChangeNotifierProxyProvider2<CategoryProvider, TransactionProvider,
             BudgetProvider>(
-          create: (_) => BudgetProvider(),
+          create: (_) => BudgetProvider()..loadBudgets(),
           update: (_, categoryProvider, transactionProvider, previous) =>
-              previous ?? BudgetProvider()
-                ..categoryProvider = categoryProvider
+              (previous ?? BudgetProvider())
                 ..transactionProvider = transactionProvider,
         ),
       ],

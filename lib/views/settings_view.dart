@@ -250,23 +250,25 @@ class _LanguageSelectorDialogState extends State<_LanguageSelectorDialog> {
     return AlertDialog(
       title: Text(l10n.selectLanguage),
       content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: LocalizationService.supportedLocales.map((locale) {
-            return RadioListTile<Locale>(
-              title: Text(LocalizationService.getDisplayName(locale, context)),
-              value: locale,
-              groupValue: _selectedLocale,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    _selectedLocale = value;
-                  });
-                  widget.onLocaleSelected(value);
-                }
-              },
-            );
-          }).toList(),
+        child: RadioGroup<Locale>(
+          groupValue: _selectedLocale,
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                _selectedLocale = value;
+              });
+              widget.onLocaleSelected(value);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: LocalizationService.supportedLocales.map((locale) {
+              return RadioListTile<Locale>(
+                title: Text(LocalizationService.getDisplayName(locale, context)),
+                value: locale,
+              );
+            }).toList(),
+          ),
         ),
       ),
       actions: [
