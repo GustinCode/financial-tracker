@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:hive/hive.dart';
 
 class BudgetAdapter extends TypeAdapter<Budget> {
@@ -103,3 +104,82 @@ class BudgetProgress {
     required this.remaining,
   });
 }
+=======
+import 'package:hive/hive.dart';
+
+class BudgetAdapter extends TypeAdapter<Budget> {
+  @override
+  final int typeId = 3;
+
+  @override
+  Budget read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+
+    return Budget(
+      id: fields[0] as String,
+      categoryId: fields[1] as String,
+      limitAmount: fields[2] as double,
+      monthKey: fields[3] as String,
+      createdAt: DateTime.parse(fields[4] as String),
+      updatedAt: DateTime.parse(fields[5] as String),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Budget obj) {
+    writer
+      ..writeByte(6)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.categoryId)
+      ..writeByte(2)
+      ..write(obj.limitAmount)
+      ..writeByte(3)
+      ..write(obj.monthKey)
+      ..writeByte(4)
+      ..write(obj.createdAt.toIso8601String())
+      ..writeByte(5)
+      ..write(obj.updatedAt.toIso8601String());
+  }
+}
+
+class Budget extends HiveObject {
+  String id;
+  String categoryId;
+  double limitAmount;
+  String monthKey;
+  DateTime createdAt;
+  DateTime updatedAt;
+
+  Budget({
+    required this.id,
+    required this.categoryId,
+    required this.limitAmount,
+    required this.monthKey,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  Budget copyWith({
+    String? id,
+    String? categoryId,
+    double? limitAmount,
+    String? monthKey,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Budget(
+      id: id ?? this.id,
+      categoryId: categoryId ?? this.categoryId,
+      limitAmount: limitAmount ?? this.limitAmount,
+      monthKey: monthKey ?? this.monthKey,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+}
+>>>>>>> 0341b2aace011fd5299e50e2816cd34a66c588a9

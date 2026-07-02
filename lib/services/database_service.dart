@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../models/budget_model.dart';
 import '../models/transaction_model.dart';
 import '../models/category_model.dart';
 import '../models/budget_model.dart';
