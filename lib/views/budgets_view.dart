@@ -73,11 +73,11 @@ class _BudgetsViewState extends State<BudgetsView> {
           ),
           const SizedBox(height: 8),
           if (monthBudgets.isEmpty)
-            Card(
+            const Card(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
-                  children: const [
+                  children: [
                     Icon(Icons.savings_outlined, size: 48, color: Colors.grey),
                     SizedBox(height: 12),
                     Text(
@@ -142,7 +142,7 @@ class _BudgetsViewState extends State<BudgetsView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<Category>(
-                  value: selectedCategory,
+                  initialValue: selectedCategory,
                   items: expenseCategories
                       .map(
                         (category) => DropdownMenuItem(

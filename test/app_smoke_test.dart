@@ -123,16 +123,16 @@ void main() {
         ChangeNotifierProvider<TransactionProvider>.value(value: transactionProvider),
         ChangeNotifierProvider<BudgetProvider>.value(value: budgetProvider),
       ],
-      child: MaterialApp(
-        locale: const Locale('en', 'US'),
-        localizationsDelegates: const [
+      child: const MaterialApp(
+        locale: Locale('en', 'US'),
+        localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const HomeView(),
+        home: HomeView(),
       ),
     );
   }

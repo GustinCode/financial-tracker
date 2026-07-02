@@ -8,7 +8,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('adds a transaction through the real app flow', (tester) async {
-    await app.main();
+    app.main();
     await tester.pumpAndSettle();
 
     final uniqueTitle = 'Integration ${DateTime.now().millisecondsSinceEpoch}';
