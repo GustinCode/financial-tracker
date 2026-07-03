@@ -67,7 +67,7 @@ class _SettingsViewState extends State<SettingsView> {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(l10n.version),
-            subtitle: const Text('0.0.4'),
+            subtitle: const Text('0.0.7'),
           ),
           const Divider(),
           Padding(
@@ -264,7 +264,8 @@ class _LanguageSelectorDialogState extends State<_LanguageSelectorDialog> {
             mainAxisSize: MainAxisSize.min,
             children: LocalizationService.supportedLocales.map((locale) {
               return RadioListTile<Locale>(
-                title: Text(LocalizationService.getDisplayName(locale, context)),
+                title:
+                    Text(LocalizationService.getDisplayName(locale, context)),
                 value: locale,
               );
             }).toList(),
