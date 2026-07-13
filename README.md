@@ -25,62 +25,67 @@ O Financial Tracker é um aplicativo simples e intuitivo para controle de finan�
 
 ## 📋 Pré-requisitos
 
-- Flutter SDK (>=3.0.0)
-- Android Studio ou VS Code
-- Dispositivo Android ou emulador
+- Flutter SDK 3.x compatível com `>=3.0.0 <4.0.0`
+- Android Studio ou VS Code com as extensões Flutter e Dart instaladas
+- Android SDK com plataforma Android 21+ configurada
+- JDK 11 ou JDK 17 instalado para build Android
 
 ## 🚀 Como Executar
 
-1. Clone o repositório ou navegue até a pasta do projeto
+1. Clone o repositório e entre na pasta do projeto:
+```bash
+git clone 'git@github.com:GustinCode/financial-tracker.git'
+cd financial-tracker
+```
+---
 
-2. Instale as dependências:
+2. Instale as dependências do Flutter:
 ```bash
 flutter pub get
 ```
+---
 
-3. Execute o aplicativo no Android:
+3. Para garantir que os ícones do app e a localização do app(linguagem) estão atualizados, execute (opcional se já estiverem gerados):
+- ícones do app:
 ```bash
-flutter run -d android
+flutter pub run flutter_launcher_icons
 ```
 
-Para mais detalhes, consulte [EXECUTAR_ANDROID.md](EXECUTAR_ANDROID.md)
+- arquivos de localização (linguagem), use:
 
-## 📁 Estrutura do Projeto
-
+```bash
+flutter pub get
+flutter gen-l10n
 ```
-lib/
-├── main.dart                 # Ponto de entrada da aplicação
-├── models/                   # Modelos de dados
-│   ├── transaction_model.dart
-│   └── category_model.dart
-├── repositories/             # Camada de acesso a dados
-│   ├── transaction_repository.dart
-│   └── category_repository.dart
-├── providers/                # Gerenciamento de estado
-│   ├── transaction_provider.dart
-│   └── category_provider.dart
-├── views/                    # Telas da aplicação
-│   ├── home_view.dart
-│   ├── add_transaction_view.dart
-│   ├── history_view.dart
-│   └── settings_view.dart
-├── widgets/                  # Componentes reutilizáveis
-│   ├── balance_display.dart
-│   └── transaction_card.dart
-├── services/                 # Serviços auxiliares
-│   └── database_service.dart
-└── utils/                    # Utilitários
-    ├── constants.dart
-    └── formatters.dart
+---
+
+
+4. Execute o aplicativo em um dispositivo ou emulador Android:
+```bash
+flutter run -d <deviceId>
+```
+---
+
+5. Para gerar um APK de debug:
+```bash
+flutter build apk --debug
+```
+---
+
+### Desenvolvimento adicional
+
+- Se você modificar modelos Hive ou gerar código, execute:
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-## 🎨 Arquitetura
+- Se precisar regenerar arquivos de localização, use:
+```bash
+flutter pub get
+flutter gen-l10n
+```
 
-O projeto segue o padrão **MVVM (Model-View-ViewModel)**:
 
-- **Model**: Classes de dados (Transaction, Category)
-- **View**: Widgets da interface (Views e Widgets)
-- **ViewModel**: Providers que gerenciam estado e lógica de negócio
 
 ## 📝 Licença
 
@@ -96,6 +101,4 @@ Este projeto é de código aberto e está disponível para uso pessoal.
 - Backup automático
 - Notificações
 - Integração com Open Finance
-
-
 
