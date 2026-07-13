@@ -1,5 +1,23 @@
 import 'package:hive/hive.dart';
 
+enum BudgetStatus { ok, warning, exceeded }
+
+class BudgetProgress {
+  final Budget budget;
+  final double spent;
+  final double percentage;
+  final double remaining;
+  final BudgetStatus status;
+
+  const BudgetProgress({
+    required this.budget,
+    required this.spent,
+    required this.percentage,
+    required this.remaining,
+    required this.status,
+  });
+}
+
 class BudgetAdapter extends TypeAdapter<Budget> {
   @override
   final int typeId = 3;
@@ -40,8 +58,6 @@ class BudgetAdapter extends TypeAdapter<Budget> {
   }
 }
 
-enum BudgetStatus { ok, warning, exceeded }
-
 class Budget extends HiveObject {
   String id;
   String categoryId;
@@ -49,6 +65,10 @@ class Budget extends HiveObject {
   String monthKey;
   DateTime createdAt;
   DateTime updatedAt;
+
+  static String createId(String categoryId, String monthKey) {
+    return '${categoryId}_$monthKey';
+  }
 
   Budget({
     required this.id,
@@ -58,10 +78,6 @@ class Budget extends HiveObject {
     required this.createdAt,
     required this.updatedAt,
   });
-
-  static String createId(String categoryId, String monthKey) {
-    return '${categoryId}_$monthKey';
-  }
 
   Budget copyWith({
     String? id,
@@ -80,20 +96,4 @@ class Budget extends HiveObject {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
-}
-
-class BudgetProgress {
-  final Budget budget;
-  final double spent;
-  final double percentage;
-  final BudgetStatus status;
-  final double remaining;
-
-  const BudgetProgress({
-    required this.budget,
-    required this.spent,
-    required this.percentage,
-    required this.status,
-    required this.remaining,
-  });
 }

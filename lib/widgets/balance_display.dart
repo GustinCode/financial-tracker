@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/formatters.dart';
-import '../utils/constants.dart';
 
 class BalanceDisplay extends StatelessWidget {
   final double balance;
@@ -19,60 +18,91 @@ class BalanceDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final locale = Formatters.getLocaleFromContext(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.currentBalance,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              Formatters.formatCurrency(balance, locale),
-              style: TextStyle(
-                fontSize: 30,
-                height: 1.05,
-                fontWeight: FontWeight.w700,
-                color: balance >= 0
-                    ? AppConstants.incomeColor
-                    : AppConstants.expenseColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInfoTile(
-                    context,
-                    l10n.incomesLabel,
-                    totalIncome,
-                    AppConstants.incomeColor,
-                    Icons.trending_up,
-                    locale,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildInfoTile(
-                    context,
-                    l10n.expensesLabel,
-                    totalExpenses,
-                    AppConstants.expenseColor,
-                    Icons.trending_down,
-                    locale,
-                  ),
-                ),
-              ],
-            ),
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            scheme.primary.withValues(alpha: 0.94),
+            scheme.primary.withValues(alpha: 0.78),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: scheme.primary.withValues(alpha: 0.16),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(Icons.account_balance_wallet_outlined, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.currentBalance,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white70,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            Formatters.formatCurrency(balance, locale),
+            style: const TextStyle(
+              fontSize: 30,
+              height: 1.05,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildInfoTile(
+                  context,
+                  l10n.incomesLabel,
+                  totalIncome,
+                  Colors.white,
+                  Icons.trending_up,
+                  locale,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildInfoTile(
+                  context,
+                  l10n.expensesLabel,
+                  totalExpenses,
+                  Colors.white,
+                  Icons.trending_down,
+                  locale,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -88,7 +118,7 @@ class BalanceDisplay extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+        color: Colors.white.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -104,7 +134,7 @@ class BalanceDisplay extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey,
+                    color: Colors.white70,
                   ),
                 ),
               ),
@@ -113,10 +143,10 @@ class BalanceDisplay extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             Formatters.formatCurrency(value, locale),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
-              color: color,
+              color: Colors.white,
             ),
           ),
         ],

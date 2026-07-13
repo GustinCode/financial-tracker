@@ -35,15 +35,33 @@ class TransactionCard extends StatelessWidget {
       Formatters.formatDate(transaction.date, locale),
     ];
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: CircleAvatar(
-          backgroundColor: categoryColor.withValues(alpha: 0.2),
-          child: Text(
-            category?.icon ?? (isIncome ? '💰' : '💸'),
-            style: const TextStyle(fontSize: 20),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        leading: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: categoryColor.withValues(alpha: 0.16),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Center(
+            child: Text(
+              category?.icon ?? (isIncome ? '💰' : '💸'),
+              style: const TextStyle(fontSize: 20),
+            ),
           ),
         ),
         title: Text(
@@ -56,10 +74,11 @@ class TransactionCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 4),
             Text(
               subtitleParts.join(' • '),
               style: TextStyle(
-                color: Colors.grey[500],
+                color: Colors.grey[600],
                 fontSize: 12,
               ),
             ),
