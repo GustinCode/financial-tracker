@@ -1,20 +1,24 @@
 import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/budget_model.dart';
+import '../models/transaction_model.dart';
 import '../repositories/budget_repository.dart';
-import '../providers/transaction_provider.dart';
+import '../services/database_service.dart';
 import '../utils/date_helpers.dart';
 
 class BudgetProvider extends ChangeNotifier {
   final BudgetRepository _repository = BudgetRepository();
+  final Uuid _uuid = const Uuid();
 
   List<Budget> _budgets = [];
-  TransactionProvider? _transactionProvider;
 
   List<Budget> get budgets => _budgets;
 
-  set transactionProvider(TransactionProvider provider) {
-    _transactionProvider = provider;
+  bool get isCurrentMonth {
+    final currentMonthKey = monthKeyFromDate(DateTime.now());
+    return _budgets.any((budget) => budget.monthKey == currentMonthKey);
   }
 
   Future<void> loadBudgets() async {
@@ -24,40 +28,6 @@ class BudgetProvider extends ChangeNotifier {
 
   List<Budget> getBudgetsForMonth(String monthKey) {
     return _budgets.where((budget) => budget.monthKey == monthKey).toList();
-  }
-
-  Future<void> addBudget({
-    required String categoryId,
-    required double limitAmount,
-  }) async {
-    final monthKey = monthKeyFromDate(DateTime.now());
-    final existing = await _repository.getBudgetByCategoryAndMonth(
-      categoryId,
-      monthKey,
-    );
-    if (existing != null) {
-      throw StateError('Budget already exists for this category and month');
-    }
-
-    final budget = Budget(
-      id: Budget.createId(categoryId, monthKey),
-      categoryId: categoryId,
-      limitAmount: limitAmount,
-      monthKey: monthKey,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-    await _repository.addBudget(budget);
-    await loadBudgets();
-  }
-
-  Future<void> updateBudget(Budget budget, double limitAmount) async {
-    final updated = budget.copyWith(
-      limitAmount: limitAmount,
-      updatedAt: DateTime.now(),
-    );
-    await _repository.updateBudget(updated);
-    await loadBudgets();
   }
 
   Future<void> saveBudget({
@@ -72,7 +42,7 @@ class BudgetProvider extends ChangeNotifier {
     );
 
     final budget = Budget(
-      id: existing?.id ?? id ?? Budget.createId(categoryId, monthKey),
+      id: existing?.id ?? id ?? _uuid.v4(),
       categoryId: categoryId,
       limitAmount: limitAmount,
       monthKey: monthKey,
@@ -89,96 +59,115 @@ class BudgetProvider extends ChangeNotifier {
     await loadBudgets();
   }
 
+  Future<void> addBudget({
+    required String categoryId,
+    required double limitAmount,
+    String? monthKey,
+  }) async {
+    await saveBudget(
+      categoryId: categoryId,
+      limitAmount: limitAmount,
+      monthKey: monthKey ?? monthKeyFromDate(DateTime.now()),
+    );
+  }
+
+  Future<void> updateBudget(Budget budget, double limitAmount) async {
+    final updated = budget.copyWith(
+      limitAmount: limitAmount,
+      updatedAt: DateTime.now(),
+    );
+    await _repository.updateBudget(updated);
+    await loadBudgets();
+  }
+
   Future<void> deleteBudget(String id) async {
     await _repository.deleteBudget(id);
     await loadBudgets();
   }
 
   Future<void> deleteAllBudgets() async {
-    await _repository.deleteAllBudgets();
-    await loadBudgets();
-  }
-
-  double getSpentForCategory(String categoryId, DateTime date) {
-    return _transactionProvider
-            ?.getMonthlyExpensesForCategory(categoryId, date.year, date.month) ??
-        0.0;
-  }
-
-  BudgetProgress getProgress(Budget budget) {
-    final spent = getSpentForCategory(
-      budget.categoryId,
-      DateTime.parse('${budget.monthKey}-01'),
-    );
-    return _buildProgress(budget, spent);
-  }
-
-  List<BudgetProgress> getAllProgress() {
-    final currentMonthKey = monthKeyFromDate(DateTime.now());
-    return _budgets
-        .where((budget) => budget.monthKey == currentMonthKey)
-        .map(getProgress)
-        .toList()
-      ..sort((a, b) => b.percentage.compareTo(a.percentage));
-  }
-
-  BudgetProgress _buildProgress(Budget budget, double spent) {
-    final percentage = budget.limitAmount > 0
-        ? (spent / budget.limitAmount) * 100
-        : (spent > 0 ? 100.0 : 0.0);
-    final remaining = budget.limitAmount - spent;
-
-    BudgetStatus status;
-    if (percentage >= 100) {
-      status = BudgetStatus.exceeded;
-    } else if (percentage >= 80) {
-      status = BudgetStatus.warning;
-    } else {
-      status = BudgetStatus.ok;
+    final allBudgets = await _repository.getAllBudgets();
+    for (final budget in allBudgets) {
+      await _repository.deleteBudget(budget.id);
     }
-
-    return BudgetProgress(
-      budget: budget,
-      spent: spent,
-      percentage: percentage,
-      status: status,
-      remaining: remaining,
-    );
+    await loadBudgets();
   }
 
   Future<BudgetStatus?> checkBudgetAlertAfterTransaction(
     String categoryId,
     DateTime date,
   ) async {
-    final budget = await _repository.getBudgetByCategoryAndMonth(
-      categoryId,
-      monthKeyFromDate(date),
+    final monthKey = monthKeyFromDate(date);
+    final budget = _budgets.firstWhere(
+      (item) => item.categoryId == categoryId && item.monthKey == monthKey,
+      orElse: () => Budget(
+        id: '',
+        categoryId: '',
+        limitAmount: 0,
+        monthKey: monthKey,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
     );
-    if (budget == null) return null;
 
-    final spent = getSpentForCategory(categoryId, date);
-    final progress = _buildProgress(budget, spent);
-    if (progress.status == BudgetStatus.exceeded ||
-        progress.status == BudgetStatus.warning) {
-      return progress.status;
-    }
-    return null;
-  }
-
-  bool get isCurrentMonth {
-    final now = DateTime.now();
-    final currentKey = monthKeyFromDate(now);
-    return _budgets.any((budget) => budget.monthKey == currentKey);
-  }
-
-  Budget? getBudgetForCategory(String categoryId) {
-    try {
-      final currentMonthKey = monthKeyFromDate(DateTime.now());
-      return _budgets.firstWhere(
-        (b) => b.categoryId == categoryId && b.monthKey == currentMonthKey,
-      );
-    } catch (_) {
+    if (budget.id.isEmpty || budget.limitAmount <= 0) {
       return null;
     }
+
+    final box = Hive.box<Transaction>(DatabaseService.transactionsBoxName);
+    final monthTransactions = box.values.where((transaction) {
+      return transaction.type == TransactionType.expense &&
+          transaction.categoryId == categoryId &&
+          monthKeyFromDate(transaction.date) == monthKey;
+    }).toList();
+
+    final spent = monthTransactions.fold<double>(0, (sum, transaction) => sum + transaction.amount);
+
+    if (spent >= budget.limitAmount) {
+      return BudgetStatus.exceeded;
+    }
+    if (spent >= budget.limitAmount * 0.8) {
+      return BudgetStatus.warning;
+    }
+    return BudgetStatus.ok;
+  }
+
+  List<BudgetProgress> getAllProgress() {
+    final currentMonthKey = monthKeyFromDate(DateTime.now());
+    final box = Hive.box<Transaction>(DatabaseService.transactionsBoxName);
+    final monthTransactions = box.values.where((transaction) {
+      return transaction.type == TransactionType.expense &&
+          monthKeyFromDate(transaction.date) == currentMonthKey;
+    }).toList();
+
+    final spentByCategory = <String, double>{};
+    for (final transaction in monthTransactions) {
+      spentByCategory.update(
+        transaction.categoryId,
+        (value) => value + transaction.amount,
+        ifAbsent: () => transaction.amount,
+      );
+    }
+
+    return _budgets
+        .where((budget) => budget.monthKey == currentMonthKey)
+        .map((budget) {
+          final spent = spentByCategory[budget.categoryId] ?? 0;
+          final percentage = budget.limitAmount <= 0 ? 0.0 : (spent / budget.limitAmount) * 100;
+          final remaining = budget.limitAmount - spent;
+          final status = percentage >= 100
+              ? BudgetStatus.exceeded
+              : percentage >= 80
+                  ? BudgetStatus.warning
+                  : BudgetStatus.ok;
+          return BudgetProgress(
+            budget: budget,
+            spent: spent,
+            percentage: percentage,
+            remaining: remaining,
+            status: status,
+          );
+        })
+        .toList();
   }
 }

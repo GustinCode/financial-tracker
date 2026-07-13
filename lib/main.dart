@@ -69,18 +69,14 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (_) => CategoryProvider()..loadCategories(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => BudgetProvider()..loadBudgets(),
+        ),
         ChangeNotifierProxyProvider<CategoryProvider, TransactionProvider>(
           create: (_) => TransactionProvider(),
           update: (_, categoryProvider, previous) =>
-              (previous ?? TransactionProvider())
+              previous ?? TransactionProvider()
                 ..categoryProvider = categoryProvider,
-        ),
-        ChangeNotifierProxyProvider2<CategoryProvider, TransactionProvider,
-            BudgetProvider>(
-          create: (_) => BudgetProvider()..loadBudgets(),
-          update: (_, categoryProvider, transactionProvider, previous) =>
-              (previous ?? BudgetProvider())
-                ..transactionProvider = transactionProvider,
         ),
       ],
       child: MaterialApp(
@@ -100,9 +96,10 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: const Color(0xFF0F766E),
+            brightness: Brightness.light,
           ),
           useMaterial3: true,
-          scaffoldBackgroundColor: const Color(0xFFF7F8FA),
+          scaffoldBackgroundColor: const Color(0xFFF5F7FB),
           appBarTheme: const AppBarTheme(
             centerTitle: false,
             elevation: 0,
@@ -110,28 +107,28 @@ class _MyAppState extends State<MyApp> {
             surfaceTintColor: Colors.transparent,
           ),
           cardTheme: const CardThemeData(
-            elevation: 0.8,
+            elevation: 0,
             margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(18)),
+              borderRadius: BorderRadius.all(Radius.circular(20)),
             ),
           ),
-          inputDecorationTheme: InputDecorationTheme(
+          inputDecorationTheme: const InputDecorationTheme(
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+              borderSide: BorderSide(color: Color(0xFFE5E7EB)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+              borderSide: BorderSide(color: Color(0xFFE5E7EB)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+              borderSide: BorderSide(color: Color(0xFF14B8A6)),
             ),
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
             ),
@@ -141,6 +138,13 @@ class _MyAppState extends State<MyApp> {
               borderRadius: BorderRadius.circular(14),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          ),
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            backgroundColor: Colors.white,
+            selectedItemColor: const Color(0xFF0F766E),
+            unselectedItemColor: Colors.grey.shade600,
+            elevation: 0,
+            type: BottomNavigationBarType.fixed,
           ),
         ),
         home: HomeView(

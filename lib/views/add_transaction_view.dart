@@ -188,6 +188,14 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? l10n.editTransaction : l10n.newTransaction),
+        actions: [
+          if (!widget.returnTransactionOnly)
+            IconButton(
+              onPressed: _saveTransaction,
+              icon: const Icon(Icons.check),
+              tooltip: l10n.saveTransaction,
+            ),
+        ],
       ),
       body: SafeArea(
         child: Form(
@@ -200,6 +208,28 @@ class _AddTransactionViewState extends State<AddTransactionView> {
               16 + MediaQuery.of(context).padding.bottom,
             ),
             children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.flash_on_outlined, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        widget.returnTransactionOnly
+                            ? l10n.addToList
+                            : (isEditing ? l10n.editTransaction : l10n.newTransaction),
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
               // Tipo de Transação
               Card(
                 child: Padding(
@@ -265,7 +295,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                 controller: _amountController,
                 decoration: InputDecoration(
                   labelText: l10n.amountRequired,
-                  hintText: '0.00',
+                  hintText: l10n.amountHint,
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.attach_money),
                 ),
@@ -372,21 +402,21 @@ class _AddTransactionViewState extends State<AddTransactionView> {
               const SizedBox(height: 24),
 
               // Botão Salvar
-              ElevatedButton(
+              FilledButton.icon(
                 onPressed: _saveTransaction,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
+                icon: const Icon(Icons.check_circle_outline),
+                label: Text(
                   widget.returnTransactionOnly
                       ? l10n.addToList
                       : (isEditing
                           ? l10n.updateTransaction
                           : l10n.saveTransaction),
-                  style: const TextStyle(fontSize: 16),
+                ),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
               ),
             ],

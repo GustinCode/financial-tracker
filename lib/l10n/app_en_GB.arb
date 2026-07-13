@@ -129,5 +129,16 @@
     "budgetRemaining": "Remaining: {amount}",
     "budgetOverBy": "Over by {amount}",
     "budgetWarningAlert": "Warning: you have reached 80% of the {category} budget",
-    "budgetExceededAlert": "Budget exceeded for {category}"
+    "budgetExceededAlert": "Budget exceeded for {category}",
+    "dashboard": "Dashboard",
+    "budgetOverview": "Budget overview",
+    "noBudgetsCreatedYet": "No budgets created for this month yet.",
+    "unknownCategory": "Unknown category",
+    "spentOf": "{spent} spent of {total}",
+    "percentUsed": "{percent}% used",
+    "topExpenseCategories": "Top expense categories",
+    "noSpendingRecorded": "No spending recorded for this month yet.",
+    "budgetLimit": "Budget limit: {amount}",
+    "monthLabel": "{month}",
+    "amountHint": "0.00"
 }
