@@ -25,73 +25,69 @@ O Financial Tracker é um aplicativo simples e intuitivo para controle de finan�
 
 ## 📋 Pré-requisitos
 
-- Flutter SDK 3.x compatível com `>=3.0.0 <4.0.0`
+- Flutter SDK 3.44.2 ou superior compatível com Dart 3.12+
 - Android Studio ou VS Code com as extensões Flutter e Dart instaladas
 - Android SDK com plataforma Android 21+ configurada
-- JDK 11 ou JDK 17 instalado para build Android
+- JDK 17 para build Android
 
-## 🚀 Como Executar
+## 🚀 Como executar
 
 1. Clone o repositório e entre na pasta do projeto:
 ```bash
-git clone 'git@github.com:GustinCode/financial-tracker.git'
+git clone https://github.com/GustinCode/financial-tracker.git
 cd financial-tracker
 ```
 ---
 
-2. Instale as dependências do Flutter:
+2. Instale as dependências:
 ```bash
 flutter pub get
 ```
 ---
 
-3. Para garantir que os ícones do app e a localização do app(linguagem) estão atualizados, execute (opcional se já estiverem gerados):
-- ícones do app:
+3. Atualize os recursos gerados, se necessário:
+- Icones do app:
 ```bash
 flutter pub run flutter_launcher_icons
-```
-
-- arquivos de localização (linguagem), use:
-
-```bash
-flutter pub get
 flutter gen-l10n
 ```
----
-
 
 4. Execute o aplicativo em um dispositivo ou emulador Android:
 ```bash
 flutter run -d <deviceId>
 ```
----
 
 5. Para gerar um APK de debug:
 ```bash
 flutter build apk --debug
 ```
----
 
-### Desenvolvimento adicional
+## 🔧 Desenvolvimento
 
-- Se você modificar modelos Hive ou gerar código, execute:
+- Se você alterar modelos Hive ou gerar código, execute:
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-- Se precisar regenerar arquivos de localização, use:
+- Para atualizar dependências e o lockfile do projeto:
 ```bash
-flutter pub get
-flutter gen-l10n
+flutter pub upgrade
 ```
 
+## ✅ Dependências atualizadas
 
+- Gradle wrapper: 8.9
+- Android Gradle Plugin: 8.7.2
+- Kotlin: 2.1.0
+- intl: 0.20.2
+- build_runner: 2.4.13
+- flutter_launcher_icons: 0.14.4
 
 ## 📝 Licença
 
 Este projeto é de código aberto e está disponível para uso pessoal.
 
-## 🔮 Melhorias Futuras
+## 🔮 Melhorias futuras
 
 - Filtros avançados por categoria, mês ou tipo
 - Gráficos de gastos e ganhos
