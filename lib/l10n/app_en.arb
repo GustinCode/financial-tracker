@@ -157,5 +157,50 @@
         "type": "String"
       }
     }
-  }
+  },
+  "dashboard": "Dashboard",
+  "budgetOverview": "Budget overview",
+  "manageBudgets": "Manage budgets",
+  "noBudgetsCreatedYet": "No budgets created for this month yet.",
+  "unknownCategory": "Unknown category",
+  "spentOf": "{spent} spent of {total}",
+  "@spentOf": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetRemaining": "{amount} left",
+  "budgetOverBy": "{amount} over",
+  "percentUsed": "{percent}% used",
+  "@percentUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "topExpenseCategories": "Top expense categories",
+  "noSpendingRecorded": "No spending recorded for this month yet.",
+  "budgetLimit": "Budget limit: {amount}",
+  "@budgetLimit": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "monthLabel": "{month}",
+  "@monthLabel": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "amountHint": "0.00"
 }

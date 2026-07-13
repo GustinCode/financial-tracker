@@ -295,7 +295,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                 controller: _amountController,
                 decoration: InputDecoration(
                   labelText: l10n.amountRequired,
-                  hintText: '0.00',
+                  hintText: l10n.amountHint,
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.attach_money),
                 ),

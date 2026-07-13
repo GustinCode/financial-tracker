@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/category_provider.dart';
 import '../providers/transaction_provider.dart';
+import '../services/category_translation_service.dart';
 import '../widgets/balance_display.dart';
 import '../widgets/transaction_card.dart';
 import 'add_transaction_view.dart';
@@ -73,7 +74,7 @@ class _HomeViewState extends State<HomeView> {
         onTap: (index) => setState(() => _selectedIndex = index),
         items: [
           BottomNavigationBarItem(icon: const Icon(Icons.home), label: l10n.home),
-          const BottomNavigationBarItem(icon: Icon(Icons.insights_outlined), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: const Icon(Icons.insights_outlined), label: l10n.dashboard),
           BottomNavigationBarItem(icon: const Icon(Icons.history), label: l10n.history),
           BottomNavigationBarItem(icon: const Icon(Icons.settings), label: l10n.settings),
         ],
@@ -188,7 +189,7 @@ class _OverviewTabState extends State<_OverviewTab> {
                               backgroundColor: Color(category.colorValue).withValues(alpha: 0.14),
                               child: Text(category.icon, style: const TextStyle(fontSize: 12)),
                             ),
-                            label: Text('${category.name} ($transactionCount)'),
+                            label: Text('${CategoryTranslationService.translateCategoryName(category, context)} ($transactionCount)'),
                             selected: isSelected,
                             onSelected: (_) {
                               setState(() {

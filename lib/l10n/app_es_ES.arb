@@ -129,5 +129,18 @@
   "budgetRemaining": "Restante: {amount}",
   "budgetOverBy": "Excedido en {amount}",
   "budgetWarningAlert": "Atención: ha alcanzado el 80% del presupuesto de {category}",
-  "budgetExceededAlert": "Presupuesto excedido en {category}"
+  "budgetExceededAlert": "Presupuesto excedido en {category}",
+  "dashboard": "Panel",
+  "budgetOverview": "Resumen de presupuestos",
+  "noBudgetsCreatedYet": "Aún no se han creado presupuestos para este mes.",
+  "unknownCategory": "Categoría desconocida",
+  "spentOf": "{spent} gastado de {total}",
+  "budgetRemaining": "{amount} restante",
+  "budgetOverBy": "{amount} por encima",
+  "percentUsed": "{percent}% usado",
+  "topExpenseCategories": "Principales categorías de gasto",
+  "noSpendingRecorded": "Aún no se registraron gastos para este mes.",
+  "budgetLimit": "Límite del presupuesto: {amount}",
+  "monthLabel": "{month}",
+  "amountHint": "0,00"
 }

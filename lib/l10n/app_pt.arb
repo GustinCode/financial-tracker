@@ -389,5 +389,50 @@
         "type": "String"
       }
     }
-  }
+  },
+  "dashboard": "Dashboard",
+  "budgetOverview": "Visão geral dos orçamentos",
+  "manageBudgets": "Gerenciar orçamentos",
+  "noBudgetsCreatedYet": "Nenhum orçamento criado para este mês ainda.",
+  "unknownCategory": "Categoria desconhecida",
+  "spentOf": "{spent} gasto de {total}",
+  "@spentOf": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetRemaining": "{amount} restante",
+  "budgetOverBy": "{amount} acima",
+  "percentUsed": "{percent}% utilizado",
+  "@percentUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "topExpenseCategories": "Principais categorias de gasto",
+  "noSpendingRecorded": "Nenhum gasto registrado para este mês ainda.",
+  "budgetLimit": "Limite do orçamento: {amount}",
+  "@budgetLimit": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "monthLabel": "{month}",
+  "@monthLabel": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "amountHint": "0,00"
 }

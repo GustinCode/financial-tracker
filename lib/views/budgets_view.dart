@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import '../models/budget_model.dart';
 import '../models/category_model.dart';
 import '../models/transaction_model.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/budget_provider.dart';
 import '../providers/category_provider.dart';
+import '../services/category_translation_service.dart';
 import '../utils/date_helpers.dart';
 import '../utils/formatters.dart';
 
@@ -29,6 +31,7 @@ class _BudgetsViewState extends State<BudgetsView> {
   Widget build(BuildContext context) {
     final budgetProvider = context.watch<BudgetProvider>();
     final categoryProvider = context.watch<CategoryProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final locale = Formatters.getLocaleFromContext(context);
 
     final monthBudgets = budgetProvider.getBudgetsForMonth(monthKeyFromDate(_selectedMonth));
@@ -36,7 +39,7 @@ class _BudgetsViewState extends State<BudgetsView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Budgets'),
+        title: Text(l10n.budgets),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: expenseCategories.isEmpty
@@ -49,7 +52,7 @@ class _BudgetsViewState extends State<BudgetsView> {
                 );
               },
         icon: const Icon(Icons.add),
-        label: const Text('Add Budget'),
+        label: Text(l10n.addBudget),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -73,21 +76,21 @@ class _BudgetsViewState extends State<BudgetsView> {
           ),
           const SizedBox(height: 8),
           if (monthBudgets.isEmpty)
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    Icon(Icons.savings_outlined, size: 48, color: Colors.grey),
-                    SizedBox(height: 12),
+                    const Icon(Icons.savings_outlined, size: 48, color: Colors.grey),
+                    const SizedBox(height: 12),
                     Text(
-                      'No budgets for this month yet',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      l10n.noBudgetsForMonth,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Create a budget to track spending by category.',
+                      l10n.noBudgetsHint,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -100,6 +103,7 @@ class _BudgetsViewState extends State<BudgetsView> {
               return _BudgetCard(
                 budget: budget,
                 category: category,
+                l10n: l10n,
                 onEdit: () async {
                   await _showBudgetDialog(
                     context,
@@ -123,6 +127,7 @@ class _BudgetsViewState extends State<BudgetsView> {
     Budget? existingBudget,
   }) async {
     final budgetProvider = context.read<BudgetProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final formKey = GlobalKey<FormState>();
     final amountController = TextEditingController(
       text: existingBudget?.limitAmount.toStringAsFixed(2) ?? '',
@@ -135,7 +140,7 @@ class _BudgetsViewState extends State<BudgetsView> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text(existingBudget == null ? 'Add Budget' : 'Edit Budget'),
+          title: Text(existingBudget == null ? l10n.addBudget : l10n.editBudget),
           content: Form(
             key: formKey,
             child: Column(
@@ -154,16 +159,16 @@ class _BudgetsViewState extends State<BudgetsView> {
                   onChanged: (value) {
                     selectedCategory = value;
                   },
-                  decoration: const InputDecoration(labelText: 'Category'),
+                  decoration: InputDecoration(labelText: l10n.category),
                 ),
                 TextFormField(
                   controller: amountController,
-                  decoration: const InputDecoration(labelText: 'Limit amount'),
+                  decoration: InputDecoration(labelText: l10n.monthlyLimit),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   validator: (value) {
                     final amount = double.tryParse((value ?? '').replaceAll(',', '.'));
                     if (amount == null || amount <= 0) {
-                      return 'Enter a valid amount';
+                      return l10n.pleaseEnterValidAmount;
                     }
                     return null;
                   },
@@ -171,7 +176,7 @@ class _BudgetsViewState extends State<BudgetsView> {
                 const SizedBox(height: 8),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Month: $monthKey'),
+                  child: Text(l10n.monthLabel(monthKey)),
                 ),
               ],
             ),
@@ -179,7 +184,7 @@ class _BudgetsViewState extends State<BudgetsView> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -198,7 +203,7 @@ class _BudgetsViewState extends State<BudgetsView> {
                   Navigator.pop(dialogContext);
                 }
               },
-              child: const Text('Save'),
+              child: Text(l10n.saveBudget),
             ),
           ],
         );
@@ -210,12 +215,14 @@ class _BudgetsViewState extends State<BudgetsView> {
 class _BudgetCard extends StatelessWidget {
   final Budget budget;
   final Category? category;
+  final AppLocalizations l10n;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const _BudgetCard({
     required this.budget,
     required this.category,
+    required this.l10n,
     required this.onEdit,
     required this.onDelete,
   });
@@ -227,16 +234,16 @@ class _BudgetCard extends StatelessWidget {
         leading: CircleAvatar(
           child: Text(category?.icon ?? '💰'),
         ),
-        title: Text(category?.name ?? 'Unknown category'),
-        subtitle: Text('Budget limit: ${budget.limitAmount.toStringAsFixed(2)}'),
+        title: Text(category != null ? CategoryTranslationService.translateCategoryName(category!, context) : l10n.unknownCategory),
+        subtitle: Text(l10n.budgetLimit(budget.limitAmount.toStringAsFixed(2))),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
             if (value == 'edit') onEdit();
             if (value == 'delete') onDelete();
           },
-          itemBuilder: (context) => const [
-            PopupMenuItem(value: 'edit', child: Text('Edit')),
-            PopupMenuItem(value: 'delete', child: Text('Delete')),
+          itemBuilder: (context) => [
+            PopupMenuItem(value: 'edit', child: Text(l10n.editTransaction)),
+            PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
           ],
         ),
       ),

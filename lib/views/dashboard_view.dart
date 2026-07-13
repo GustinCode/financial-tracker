@@ -7,6 +7,7 @@ import '../models/transaction_model.dart';
 import '../providers/budget_provider.dart';
 import '../providers/category_provider.dart';
 import '../providers/transaction_provider.dart';
+import '../services/category_translation_service.dart';
 import '../utils/date_helpers.dart';
 import '../utils/formatters.dart';
 import 'budgets_view.dart';
@@ -62,7 +63,7 @@ class _DashboardViewState extends State<DashboardView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text(l10n.dashboard),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -121,9 +122,9 @@ class _DashboardViewState extends State<DashboardView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Budget overview',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.budgetOverview,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton.icon(
                 onPressed: () {
@@ -133,16 +134,16 @@ class _DashboardViewState extends State<DashboardView> {
                   );
                 },
                 icon: const Icon(Icons.edit),
-                label: const Text('Manage budgets'),
+                label: Text(l10n.manageBudgets),
               ),
             ],
           ),
           if (monthBudgets.isEmpty)
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Text(
-                  'No budgets created for this month yet.',
+                  l10n.noBudgetsCreatedYet,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -174,11 +175,16 @@ class _DashboardViewState extends State<DashboardView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  category?.name ?? 'Unknown category',
+                                  category != null
+                                      ? CategoryTranslationService.translateCategoryName(category, context)
+                                      : l10n.unknownCategory,
                                   style: const TextStyle(fontWeight: FontWeight.w600),
                                 ),
                                 Text(
-                                  '${Formatters.formatCurrency(spent, locale)} spent of ${Formatters.formatCurrency(budget.limitAmount, locale)}',
+                                  l10n.spentOf(
+                                    Formatters.formatCurrency(spent, locale),
+                                    Formatters.formatCurrency(budget.limitAmount, locale),
+                                  ),
                                   style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
                                 ),
                               ],
@@ -186,8 +192,8 @@ class _DashboardViewState extends State<DashboardView> {
                           ),
                           Text(
                             remaining >= 0
-                                ? '${Formatters.formatCurrency(remaining, locale)} left'
-                                : '${Formatters.formatCurrency(remaining.abs(), locale)} over',
+                                ? l10n.budgetRemaining(Formatters.formatCurrency(remaining, locale))
+                                : l10n.budgetOverBy(Formatters.formatCurrency(remaining.abs(), locale)),
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: remaining >= 0 ? Colors.green : Colors.red,
@@ -203,7 +209,7 @@ class _DashboardViewState extends State<DashboardView> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${(progress * 100).round()}% used',
+                        l10n.percentUsed('${(progress * 100).round()}'),
                         style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                       ),
                     ],
@@ -212,17 +218,17 @@ class _DashboardViewState extends State<DashboardView> {
               );
             }),
           const SizedBox(height: 16),
-          const Text(
-            'Top expense categories',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            l10n.topExpenseCategories,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           if (topExpenseCategories.isEmpty)
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Text(
-                  'No spending recorded for this month yet.',
+                  l10n.noSpendingRecorded,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -237,7 +243,7 @@ class _DashboardViewState extends State<DashboardView> {
                       : Colors.grey.shade200,
                   child: Text(category?.icon ?? '•'),
                 ),
-                title: Text(category?.name ?? entry.key),
+                title: Text(category != null ? CategoryTranslationService.translateCategoryName(category, context) : entry.key),
                 trailing: Text(
                   Formatters.formatCurrency(entry.value, locale),
                   style: const TextStyle(fontWeight: FontWeight.w600),
