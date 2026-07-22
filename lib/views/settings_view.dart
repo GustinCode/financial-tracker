@@ -116,7 +116,7 @@ class _SettingsViewState extends State<SettingsView> {
           amount: l10n.amount,
           category: l10n.category,
           date: l10n.date,
-          description: l10n.description ?? 'Description',
+          description: l10n.description,
         ),
         incomeLabel: l10n.exportCsvIncomeType,
         expenseLabel: l10n.exportCsvExpenseType,

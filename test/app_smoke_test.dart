@@ -11,7 +11,6 @@ import 'package:financial_tracker/providers/budget_provider.dart';
 import 'package:financial_tracker/providers/category_provider.dart';
 import 'package:financial_tracker/providers/transaction_provider.dart';
 import 'package:financial_tracker/utils/date_helpers.dart';
-import 'package:financial_tracker/views/dashboard_view.dart';
 import 'package:financial_tracker/views/home_view.dart';
 import 'package:financial_tracker/views/settings_view.dart';
 
