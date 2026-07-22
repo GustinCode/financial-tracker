@@ -112,7 +112,7 @@ class _BudgetsViewState extends State<BudgetsView> {
                     existingBudget: budget,
                   );
                 },
-                onDelete: () => budgetProvider.deleteBudget(budget.id),
+                onDelete: () => _showDeleteConfirmation(context, budget, budgetProvider),
               );
             }),
         ],
@@ -210,6 +210,35 @@ class _BudgetsViewState extends State<BudgetsView> {
       },
     );
   }
+
+  void _showDeleteConfirmation(
+    BuildContext context,
+    Budget budget,
+    BudgetProvider budgetProvider,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteBudget),
+        content: Text(l10n.confirmDeleteBudget),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              budgetProvider.deleteBudget(budget.id);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _BudgetCard extends StatelessWidget {
@@ -242,7 +271,7 @@ class _BudgetCard extends StatelessWidget {
             if (value == 'delete') onDelete();
           },
           itemBuilder: (context) => [
-            PopupMenuItem(value: 'edit', child: Text(l10n.editTransaction)),
+            PopupMenuItem(value: 'edit', child: Text(l10n.editBudget)),
             PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
           ],
         ),

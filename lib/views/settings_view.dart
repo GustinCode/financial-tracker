@@ -6,6 +6,8 @@ import '../providers/budget_provider.dart';
 import '../services/localization_service.dart';
 import 'categories_view.dart';
 import 'budgets_view.dart';
+import '../providers/category_provider.dart';
+import '../services/csv_export_service.dart';
 
 class SettingsView extends StatefulWidget {
   final VoidCallback? onLocaleChanged;
@@ -39,6 +41,107 @@ class _SettingsViewState extends State<SettingsView> {
       ),
     );
   }
+
+  void _showExportDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final transactionProvider = context.read<TransactionProvider>();
+    final categoryProvider = context.read<CategoryProvider>();
+    
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.exportCsvTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(l10n.exportCsvPeriodAll),
+              onTap: () => _exportCsv(dialogContext, CsvExportPeriod.all, transactionProvider, categoryProvider, l10n),
+            ),
+            ListTile(
+              title: Text(l10n.exportCsvPeriodCurrentMonth),
+              onTap: () => _exportCsv(dialogContext, CsvExportPeriod.currentMonth, transactionProvider, categoryProvider, l10n),
+            ),
+            ListTile(
+              title: Text(l10n.exportCsvPeriodLastMonth),
+              onTap: () => _exportCsv(dialogContext, CsvExportPeriod.lastMonth, transactionProvider, categoryProvider, l10n),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _exportCsv(
+    BuildContext dialogContext, 
+    CsvExportPeriod period, 
+    TransactionProvider transactionProvider,
+    CategoryProvider categoryProvider,
+    AppLocalizations l10n,
+  ) async {
+    Navigator.pop(dialogContext); // Close dialog
+
+    try {
+      final filteredTransactions = CsvExportService.filterByPeriod(
+        transactionProvider.transactions,
+        period,
+      );
+
+      if (filteredTransactions.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.exportCsvNoTransactions)),
+          );
+        }
+        return;
+      }
+
+      final categoryNames = {
+        for (var cat in categoryProvider.categories) cat.id: cat.name,
+      };
+
+      final csvContent = CsvExportService.generateCsv(
+        transactions: filteredTransactions,
+        categoryNames: categoryNames,
+        labels: CsvExportColumnLabels(
+          id: 'ID',
+          title: l10n.title,
+          type: 'Type',
+          amount: l10n.amount,
+          category: l10n.category,
+          date: l10n.date,
+          description: l10n.description ?? 'Description',
+        ),
+        incomeLabel: l10n.exportCsvIncomeType,
+        expenseLabel: l10n.exportCsvExpenseType,
+      );
+
+      final file = await CsvExportService.writeCsvToTempFile(csvContent);
+      await CsvExportService.shareCsvFile(
+        file,
+        shareSubject: l10n.exportCsvTitle,
+      );
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.exportCsvSuccess)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.exportCsvFailed)),
+        );
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +232,16 @@ class _SettingsViewState extends State<SettingsView> {
                   builder: (context) => const BudgetsView(),
                 ),
               );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.download_outlined),
+            title: Text(l10n.exportToCsv),
+            subtitle: Text(l10n.exportToCsvDescription),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              _showExportDialog(context);
             },
           ),
           const Divider(),

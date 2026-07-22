@@ -48,87 +48,92 @@ class TransactionCard extends StatelessWidget {
           ),
         ],
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        leading: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: categoryColor.withValues(alpha: 0.16),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Center(
-            child: Text(
-              category?.icon ?? (isIncome ? '💰' : '💸'),
-              style: const TextStyle(fontSize: 20),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          leading: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: categoryColor.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(14),
             ),
-          ),
-        ),
-        title: Text(
-          transaction.title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(
-              subtitleParts.join(' • '),
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
+            child: Center(
+              child: Text(
+                category?.icon ?? (isIncome ? '💰' : '💸'),
+                style: const TextStyle(fontSize: 20),
               ),
             ),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              '${isIncome ? '+' : '-'}${Formatters.formatCurrency(transaction.amount, locale)}',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isIncome
-                    ? AppConstants.incomeColor
-                    : AppConstants.expenseColor,
-              ),
+          ),
+          title: Text(
+            transaction.title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-          ],
-        ),
-        onTap: onTap,
-        onLongPress: onDelete != null
-            ? () {
-                final l10n = AppLocalizations.of(context)!;
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text(l10n.deleteTransaction),
-                    content: Text(l10n.confirmDeleteTransaction),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(l10n.cancel),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          onDelete!();
-                          Navigator.pop(context);
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Text(
+                subtitleParts.join(' • '),
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${isIncome ? '+' : '-'}${Formatters.formatCurrency(transaction.amount, locale)}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isIncome
+                      ? AppConstants.incomeColor
+                      : AppConstants.expenseColor,
+                ),
+              ),
+            ],
+          ),
+          onTap: onTap,
+          onLongPress: onDelete != null
+              ? () {
+                  final l10n = AppLocalizations.of(context)!;
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(l10n.deleteTransaction),
+                      content: Text(l10n.confirmDeleteTransaction),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(l10n.cancel),
                         ),
-                        child: Text(l10n.delete),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            : null,
+                        TextButton(
+                          onPressed: () {
+                            onDelete!();
+                            Navigator.pop(context);
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                          child: Text(l10n.delete),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              : null,
+        ),
       ),
     );
   }

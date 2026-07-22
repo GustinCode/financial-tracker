@@ -434,5 +434,17 @@
       }
     }
   },
-  "amountHint": "0,00"
+  "amountHint": "0,00",
+  "exportToCsv": "Exportar para CSV",
+  "exportToCsvDescription": "Salvar suas transações em um arquivo CSV",
+  "exportCsvTitle": "Exportar Transações",
+  "exportCsvPeriodAll": "Todas as transações",
+  "exportCsvPeriodCurrentMonth": "Mês atual",
+  "exportCsvPeriodLastMonth": "Mês anterior",
+  "exportCsvAction": "Exportar",
+  "exportCsvNoTransactions": "Nenhuma transação encontrada para o período selecionado",
+  "exportCsvSuccess": "Arquivo CSV pronto para compartilhar",
+  "exportCsvFailed": "Não foi possível exportar o arquivo CSV",
+  "exportCsvIncomeType": "receita",
+  "exportCsvExpenseType": "despesa"
 }

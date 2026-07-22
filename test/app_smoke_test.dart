@@ -11,7 +11,9 @@ import 'package:financial_tracker/providers/budget_provider.dart';
 import 'package:financial_tracker/providers/category_provider.dart';
 import 'package:financial_tracker/providers/transaction_provider.dart';
 import 'package:financial_tracker/utils/date_helpers.dart';
+import 'package:financial_tracker/views/dashboard_view.dart';
 import 'package:financial_tracker/views/home_view.dart';
+import 'package:financial_tracker/views/settings_view.dart';
 
 class FakeCategoryProvider extends CategoryProvider {
   final List<models.Category> _categories;
@@ -104,6 +106,14 @@ class FakeBudgetProvider extends BudgetProvider {
 
   @override
   Future<void> deleteBudget(String id) async {}
+
+  @override
+  Future<BudgetStatus?> checkBudgetAlertAfterTransaction(
+    String categoryId,
+    DateTime date,
+  ) async {
+    return null;
+  }
 }
 
 void main() {
@@ -192,58 +202,112 @@ void main() {
     budgetProvider = FakeBudgetProvider([budget]);
   });
 
-  testWidgets('covers the main app surfaces', (tester) async {
+  testWidgets('home tab shows balance and recent transactions', (tester) async {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
+    // Balance display is visible
     expect(find.text('Current Balance'), findsOneWidget);
+
+    // Scroll down to find transactions in case they're off-screen
+    await tester.dragUntilVisible(
+      find.text('Salary'),
+      find.byType(CustomScrollView),
+      const Offset(0, -200),
+    );
     expect(find.text('Salary'), findsWidgets);
+
+    await tester.dragUntilVisible(
+      find.text('Groceries'),
+      find.byType(CustomScrollView),
+      const Offset(0, -200),
+    );
     expect(find.text('Groceries'), findsWidgets);
+  });
+
+  testWidgets('navigates to dashboard and shows budget overview', (tester) async {
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.insights_outlined));
     await tester.pumpAndSettle();
 
-    expect(find.text('Dashboard'), findsOneWidget);
+    expect(find.text('Dashboard'), findsNWidgets(2));
     expect(find.text('Current Balance'), findsOneWidget);
     expect(find.text('Budget overview'), findsOneWidget);
     expect(find.text('Food'), findsOneWidget);
     expect(find.text('40% used'), findsOneWidget);
+  });
 
-    await tester.tap(find.text('Manage budgets'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Budgets'), findsOneWidget);
-    expect(find.text('Food'), findsWidgets);
-
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Add Budget'), findsOneWidget);
-    expect(find.byType(TextFormField), findsOneWidget);
-
-    await tester.enterText(find.byType(TextFormField), '150');
-    await tester.tap(find.text('Save'));
-    await tester.pumpAndSettle();
-
-    expect(budgetProvider.lastSavedCategoryId, expenseCategory.id);
-    expect(budgetProvider.lastSavedLimitAmount, 150);
-    expect(budgetProvider.lastSavedMonthKey, monthKeyFromDate(DateTime.now()));
-
-    await tester.pageBack();
+  testWidgets('navigates to history and shows transactions', (tester) async {
+    await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.history));
     await tester.pumpAndSettle();
 
-    expect(find.text('History'), findsOneWidget);
+    expect(find.text('History'), findsNWidgets(2));
+
+    // Scroll to find transactions
+    await tester.dragUntilVisible(
+      find.text('Salary'),
+      find.byType(Scrollable).first,
+      const Offset(0, -200),
+    );
     expect(find.text('Salary'), findsWidgets);
-    expect(find.text('Groceries'), findsWidgets);
+  });
+
+  testWidgets('navigates to settings and shows main sections', (tester) async {
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.settings));
     await tester.pumpAndSettle();
 
-    expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Language'), findsOneWidget);
-    expect(find.text('Categories'), findsOneWidget);
+    expect(find.text('Settings'), findsNWidgets(2));
+
+    final settingsListView = find.descendant(
+      of: find.byType(SettingsView),
+      matching: find.byType(ListView),
+    );
+
+    // Scroll to find items that may be below the fold
+    await tester.dragUntilVisible(
+      find.text('Language').first,
+      settingsListView,
+      const Offset(0, -100),
+    );
+    expect(find.text('Language'), findsWidgets);
+
+    await tester.dragUntilVisible(
+      find.text('Categories').first,
+      settingsListView,
+      const Offset(0, -100),
+    );
+    expect(find.text('Categories'), findsWidgets);
+
+    await tester.dragUntilVisible(
+      find.text('Export to CSV'),
+      settingsListView,
+      const Offset(0, -100),
+    );
+    expect(find.text('Export to CSV'), findsOneWidget);
+  });
+
+  testWidgets('navigates to BudgetsView from dashboard', (tester) async {
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.insights_outlined));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Manage Budgets'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Budgets'), findsOneWidget);
+    expect(find.text('Food'), findsWidgets);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
   });
 }

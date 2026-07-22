@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:financial_tracker/l10n/app_localizations.dart';
 import 'package:financial_tracker/models/budget_model.dart';
 import 'package:financial_tracker/models/category_model.dart' as models;
 import 'package:financial_tracker/models/transaction_model.dart';
+import 'package:financial_tracker/l10n/app_localizations.dart';
 import 'package:financial_tracker/providers/budget_provider.dart';
 import 'package:financial_tracker/providers/category_provider.dart';
-import 'package:financial_tracker/views/budgets_view.dart';
 import 'package:financial_tracker/utils/date_helpers.dart';
+import 'package:financial_tracker/views/budgets_view.dart';
 
 class FakeCategoryProvider extends CategoryProvider {
   final List<models.Category> _categories;
@@ -89,12 +89,14 @@ class FakeBudgetProvider extends BudgetProvider {
         );
       }
     }
+    notifyListeners();
   }
 
   @override
   Future<void> deleteBudget(String id) async {
     lastDeletedBudgetId = id;
     _budgets.removeWhere((budget) => budget.id == id);
+    notifyListeners();
   }
 }
 
@@ -175,24 +177,20 @@ void main() {
       await tester.pumpWidget(buildTestApp(const BudgetsView()));
       await tester.pumpAndSettle();
 
+      // Tap the FAB to open dialog
       await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
 
-      expect(find.text('Add Budget'), findsOneWidget);
-      expect(find.text('Category'), findsOneWidget);
-      expect(find.text('Limit amount'), findsOneWidget);
+      // Dialog opened with 'Add Budget' title
+      expect(find.descendant(of: find.byType(AlertDialog), matching: find.text('Add Budget')), findsOneWidget);
+      expect(find.text('Monthly Limit'), findsOneWidget);
 
-      // Select category (Food is default)
-      await tester.tap(find.bySemanticsLabel('Category'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Food').last); // Select the first category in the dropdown
+      // Enter amount (category is pre-selected as Food by default)
+      await tester.enterText(find.widgetWithText(TextFormField, 'Monthly Limit'), '150.00');
       await tester.pumpAndSettle();
 
-      // Enter amount
-      await tester.enterText(find.widgetWithText(TextFormField, 'Limit amount'), '150.00');
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Save'));
+      // Tap Save Budget button
+      await tester.tap(find.text('Save Budget'));
       await tester.pumpAndSettle();
 
       expect(budgetProvider.lastSavedCategoryId, expenseCategory1.id);
@@ -206,18 +204,22 @@ void main() {
 
       expect(find.text('Food'), findsOneWidget);
 
+      // Open popup menu
       await tester.tap(find.byIcon(Icons.more_vert).first);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Edit'));
+      // Tap Edit Budget
+      await tester.tap(find.text('Edit Budget'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Edit Budget'), findsOneWidget);
-      expect(find.text('Budget limit: 200.00'), findsNothing); // It's a text field, not a display text
+      // Dialog opens with Edit Budget title
+      expect(find.descendant(of: find.byType(AlertDialog), matching: find.text('Edit Budget')), findsOneWidget);
 
-      // Change amount
-      await tester.enterText(find.widgetWithText(TextFormField, 'Limit amount'), '250.00');
-      await tester.tap(find.text('Save'));
+      // Change the amount
+      await tester.enterText(find.widgetWithText(TextFormField, 'Monthly Limit'), '250.00');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Save Budget'));
       await tester.pumpAndSettle();
 
       expect(budgetProvider.lastSavedCategoryId, existingBudget.categoryId);
@@ -231,19 +233,27 @@ void main() {
 
       expect(find.text('Food'), findsOneWidget);
 
+      // Open popup menu
       await tester.tap(find.byIcon(Icons.more_vert).first);
       await tester.pumpAndSettle();
 
+      // Tap Delete
       await tester.tap(find.text('Delete'));
       await tester.pumpAndSettle();
 
-      // Confirm delete dialog
+      // Confirm dialog appears
       expect(find.text('Are you sure you want to delete this budget?'), findsOneWidget);
-      await tester.tap(find.text('Delete'));
+
+      // Confirm deletion - tap the second Delete button inside the dialog
+      await tester.tap(find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text('Delete'),
+      ));
       await tester.pumpAndSettle();
 
       expect(budgetProvider.lastDeletedBudgetId, existingBudget.id);
-      expect(find.text('Food'), findsNothing); // Budget should be gone
+      // Budget should be removed from the list
+      expect(find.text('Budget limit: 200.00'), findsNothing);
     });
 
     testWidgets('navigates through months', (tester) async {

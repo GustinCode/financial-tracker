@@ -202,5 +202,17 @@
       }
     }
   },
-  "amountHint": "0.00"
+  "amountHint": "0.00",
+  "exportToCsv": "Export to CSV",
+  "exportToCsvDescription": "Save your transactions as a CSV file",
+  "exportCsvTitle": "Export Transactions",
+  "exportCsvPeriodAll": "All transactions",
+  "exportCsvPeriodCurrentMonth": "Current month",
+  "exportCsvPeriodLastMonth": "Previous month",
+  "exportCsvAction": "Export",
+  "exportCsvNoTransactions": "No transactions found for the selected period",
+  "exportCsvSuccess": "CSV file ready to share",
+  "exportCsvFailed": "Could not export CSV file",
+  "exportCsvIncomeType": "income",
+  "exportCsvExpenseType": "expense"
 }

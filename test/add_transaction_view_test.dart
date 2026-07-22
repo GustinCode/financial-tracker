@@ -94,7 +94,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Nova Transação'), findsOneWidget);
+      expect(find.text('Nova Transação'), findsNWidgets(2));
     });
 
     testWidgets(
@@ -127,7 +127,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Editar Transação'), findsOneWidget);
+      expect(find.text('Editar Transação'), findsNWidgets(2));
       expect(find.widgetWithText(TextFormField, 'Título *'), findsOneWidget);
       expect(find.text('Existing'), findsOneWidget);
     });
