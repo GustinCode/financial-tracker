@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
+import '../widgets/category_donut_chart.dart';
 import '../l10n/app_localizations.dart';
 import '../models/transaction_model.dart';
 import '../providers/budget_provider.dart';
@@ -24,7 +24,8 @@ class _DashboardViewState extends State<DashboardView> {
 
   void _changeMonth(int delta) {
     setState(() {
-      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + delta);
+      _selectedMonth =
+          DateTime(_selectedMonth.year, _selectedMonth.month + delta);
     });
   }
 
@@ -48,9 +49,11 @@ class _DashboardViewState extends State<DashboardView> {
         .fold<double>(0, (sum, transaction) => sum + transaction.amount);
     final balance = income - expenses;
 
-    final monthBudgets = budgetProvider.getBudgetsForMonth(monthKeyFromDate(_selectedMonth));
+    final monthBudgets =
+        budgetProvider.getBudgetsForMonth(monthKeyFromDate(_selectedMonth));
     final expenseByCategory = <String, double>{};
-    for (final transaction in monthTransactions.where((transaction) => transaction.type == TransactionType.expense)) {
+    for (final transaction in monthTransactions
+        .where((transaction) => transaction.type == TransactionType.expense)) {
       expenseByCategory.update(
         transaction.categoryId,
         (value) => value + transaction.amount,
@@ -76,8 +79,10 @@ class _DashboardViewState extends State<DashboardView> {
                 icon: const Icon(Icons.chevron_left),
               ),
               Text(
-                DateFormat('MMMM yyyy', locale?.toString() ?? 'en_US').format(_selectedMonth),
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                DateFormat('MMMM yyyy', locale?.toString() ?? 'en_US')
+                    .format(_selectedMonth),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               IconButton(
                 onPressed: () => _changeMonth(1),
@@ -124,7 +129,8 @@ class _DashboardViewState extends State<DashboardView> {
             children: [
               Text(
                 l10n.budgetOverview,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton.icon(
                 onPressed: () {
@@ -150,9 +156,12 @@ class _DashboardViewState extends State<DashboardView> {
             )
           else
             ...monthBudgets.map((budget) {
-              final category = categoryProvider.getCategoryById(budget.categoryId);
+              final category =
+                  categoryProvider.getCategoryById(budget.categoryId);
               final spent = expenseByCategory[budget.categoryId] ?? 0;
-              final progress = budget.limitAmount <= 0 ? 0.0 : (spent / budget.limitAmount).clamp(0.0, 1.0);
+              final progress = budget.limitAmount <= 0
+                  ? 0.0
+                  : (spent / budget.limitAmount).clamp(0.0, 1.0);
               final remaining = budget.limitAmount - spent;
 
               return Card(
@@ -165,7 +174,8 @@ class _DashboardViewState extends State<DashboardView> {
                         children: [
                           CircleAvatar(
                             backgroundColor: category != null
-                                ? Color(category.colorValue).withValues(alpha: 0.15)
+                                ? Color(category.colorValue)
+                                    .withValues(alpha: 0.15)
                                 : Colors.grey.shade200,
                             child: Text(category?.icon ?? '💰'),
                           ),
@@ -176,24 +186,33 @@ class _DashboardViewState extends State<DashboardView> {
                               children: [
                                 Text(
                                   category != null
-                                      ? CategoryTranslationService.translateCategoryName(category, context)
+                                      ? CategoryTranslationService
+                                          .translateCategoryName(
+                                              category, context)
                                       : l10n.unknownCategory,
-                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600),
                                 ),
                                 Text(
                                   l10n.spentOf(
                                     Formatters.formatCurrency(spent, locale),
-                                    Formatters.formatCurrency(budget.limitAmount, locale),
+                                    Formatters.formatCurrency(
+                                        budget.limitAmount, locale),
                                   ),
-                                  style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
+                                  style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 12),
                                 ),
                               ],
                             ),
                           ),
                           Text(
                             remaining >= 0
-                                ? l10n.budgetRemaining(Formatters.formatCurrency(remaining, locale))
-                                : l10n.budgetOverBy(Formatters.formatCurrency(remaining.abs(), locale)),
+                                ? l10n.budgetRemaining(
+                                    Formatters.formatCurrency(
+                                        remaining, locale))
+                                : l10n.budgetOverBy(Formatters.formatCurrency(
+                                    remaining.abs(), locale)),
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: remaining >= 0 ? Colors.green : Colors.red,
@@ -210,7 +229,8 @@ class _DashboardViewState extends State<DashboardView> {
                       const SizedBox(height: 8),
                       Text(
                         l10n.percentUsed('${(progress * 100).round()}'),
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.grey.shade700),
                       ),
                     ],
                   ),
@@ -243,13 +263,23 @@ class _DashboardViewState extends State<DashboardView> {
                       : Colors.grey.shade200,
                   child: Text(category?.icon ?? '•'),
                 ),
-                title: Text(category != null ? CategoryTranslationService.translateCategoryName(category, context) : entry.key),
+                title: Text(category != null
+                    ? CategoryTranslationService.translateCategoryName(
+                        category, context)
+                    : entry.key),
                 trailing: Text(
                   Formatters.formatCurrency(entry.value, locale),
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               );
             }),
+          if (expenseByCategory.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            CategoryDonutChart(
+              expenseByCategory: expenseByCategory,
+              getCategory: (id) => categoryProvider.getCategoryById(id),
+            ),
+          ],
         ],
       ),
     );
@@ -292,7 +322,8 @@ class _SummaryCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -300,7 +331,8 @@ class _SummaryCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             Formatters.formatCurrency(value, locale),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: color),
           ),
         ],
       ),

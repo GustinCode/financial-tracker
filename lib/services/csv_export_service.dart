@@ -61,7 +61,8 @@ class CsvExportService {
     }
 
     return transactions.where((transaction) {
-      return !transaction.date.isBefore(start) && !transaction.date.isAfter(end);
+      return !transaction.date.isBefore(start) &&
+          !transaction.date.isAfter(end);
     }).toList();
   }
 
@@ -120,7 +121,8 @@ class CsvExportService {
     return 'financial_tracker_export_$datePart.csv';
   }
 
-  static Future<File> writeCsvToTempFile(String csvContent, {String? fileName}) async {
+  static Future<File> writeCsvToTempFile(String csvContent,
+      {String? fileName}) async {
     final directory = await getTemporaryDirectory();
     final file = File('${directory.path}/${fileName ?? buildFileName()}');
     await file.writeAsString(csvContent);
@@ -128,10 +130,10 @@ class CsvExportService {
   }
 
   static Future<void> shareCsvFile(File file, {String? shareSubject}) async {
-    await Share.shareXFiles(
-      [XFile(file.path, mimeType: 'text/csv')],
+    await SharePlus.instance.share(ShareParams(
+      files: [XFile(file.path, mimeType: 'text/csv')],
       subject: shareSubject,
-    );
+    ));
   }
 
   static String _formatDate(DateTime date) {

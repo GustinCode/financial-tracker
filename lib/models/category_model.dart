@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'transaction_model.dart';
+import 'package:flutter/material.dart';
 
 class CategoryAdapter extends TypeAdapter<Category> {
   @override
@@ -55,6 +56,8 @@ class Category extends HiveObject {
   bool isDefault;
   String? parentCategoryId;
   bool isCustom;
+
+  Color get color => Color(colorValue);
 
   Category({
     required this.id,
